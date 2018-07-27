@@ -1,6 +1,7 @@
 package me.susieson.popularmovies.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,8 +13,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import me.susieson.popularmovies.DetailActivity;
+import me.susieson.popularmovies.MainActivity;
 import me.susieson.popularmovies.R;
 import me.susieson.popularmovies.model.Movie;
+import me.susieson.popularmovies.utils.ImageUtils;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
@@ -52,9 +56,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private final String BASE_URL = "http://image.tmdb.org/t/p";
-        private final String SIZE = "/w185";
-
         private ImageView mImageView;
         private Context mContext;
 
@@ -66,8 +67,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
 
         void bind(int position) {
-            final String PATH = mMovieArrayList.get(position).getPosterPath();
-            final String URL = BASE_URL + SIZE + PATH;
+            final String URL = ImageUtils.buildUrl(mMovieArrayList.get(position).getPosterPath());
 
             mImageView.setOnClickListener(this);
 
@@ -77,6 +77,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
+
+            Intent intent = new Intent(mContext, DetailActivity.class);
+            intent.putExtra(MainActivity.EXTRA_POSITION, position);
+            mContext.startActivity(intent);
         }
     }
 }
