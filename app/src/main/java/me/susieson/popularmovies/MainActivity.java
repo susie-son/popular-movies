@@ -10,20 +10,17 @@ import android.view.MenuItem;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import me.susieson.popularmovies.adapters.MovieAdapter;
-import me.susieson.popularmovies.model.Movie;
+import me.susieson.popularmovies.constants.PreferenceConstants;
 import me.susieson.popularmovies.utils.JsonUtils;
 import me.susieson.popularmovies.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String EXTRA_POSITION = "me.susieson.popularmovies.MainActivity.POSITION";
-    private static String currentPreference = NetworkUtils.mostPopular;
+    private static String currentPreference = PreferenceConstants.mostPopular;
     private static final int MOVIE_POSTER_GRID_SPAN = 5;
 
-    public static ArrayList<Movie> mMovieArrayList;
     private static MovieAdapter mMovieAdapter;
 
     @Override
@@ -36,10 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.movies_rv);
 
-        mMovieArrayList = new ArrayList<>();
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN);
-        mMovieAdapter = new MovieAdapter(mMovieArrayList);
+        mMovieAdapter = new MovieAdapter(JsonUtils.getMovieList());
 
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(mMovieAdapter);
@@ -58,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
         URL builtUrl;
         switch (menuItemSelectedId) {
             case R.id.most_popular:
-                currentPreference = NetworkUtils.mostPopular;
+                currentPreference = PreferenceConstants.mostPopular;
                 builtUrl = NetworkUtils.buildUrl(currentPreference);
                 new MovieQueryTask().execute(builtUrl);
                 return true;
             case R.id.top_rated:
-                currentPreference = NetworkUtils.topRated;
+                currentPreference = PreferenceConstants.topRated;
                 builtUrl = NetworkUtils.buildUrl(currentPreference);
                 new MovieQueryTask().execute(builtUrl);
                 return true;
@@ -89,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            mMovieArrayList = JsonUtils.parseMovieJson(s);
+            JsonUtils.parseMovieJson(s);
 
-            mMovieAdapter.updateData(mMovieArrayList);
+            mMovieAdapter.updateData(JsonUtils.getMovieList());
         }
     }
 }
