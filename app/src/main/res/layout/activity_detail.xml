@@ -68,7 +68,6 @@
             android:layout_toRightOf="@id/movie_poster_thumbnail"
             android:layout_toEndOf="@id/movie_poster_thumbnail"
             android:layout_below="@id/vote_average_label"
-            android:layout_alignBottom="@id/overview"
             android:textSize="@dimen/vote_average_font_size" />
 
         <TextView
