@@ -10,9 +10,11 @@ import me.susieson.popularmovies.model.Movie;
 
 public class JsonUtils {
 
-    public static ArrayList<Movie> parseMovieJson(String json) {
+    private static ArrayList<Movie> mMovieArrayList;
+
+    public static void parseMovieJson(String json) {
         if (json == null) {
-            return null;
+            mMovieArrayList = null;
         }
 
         ArrayList<Movie> movies = new ArrayList<>();
@@ -34,6 +36,12 @@ public class JsonUtils {
             e.printStackTrace();
         }
 
-        return movies;
+        mMovieArrayList = movies;
+    }
+
+    public static ArrayList<Movie> getMovieList() {
+        if (mMovieArrayList != null)
+            return mMovieArrayList;
+        return new ArrayList<>();
     }
 }

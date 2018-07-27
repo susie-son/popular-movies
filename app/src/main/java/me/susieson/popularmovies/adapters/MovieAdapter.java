@@ -14,8 +14,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import me.susieson.popularmovies.DetailActivity;
-import me.susieson.popularmovies.MainActivity;
 import me.susieson.popularmovies.R;
+import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.model.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
 
@@ -79,7 +79,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             int position = getAdapterPosition();
 
             Intent intent = new Intent(mContext, DetailActivity.class);
-            intent.putExtra(MainActivity.EXTRA_POSITION, position);
+            intent.putExtra(IntentExtraConstants.EXTRA_POSITION, position);
             mContext.startActivity(intent);
         }
     }

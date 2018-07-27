@@ -16,8 +16,6 @@ public class NetworkUtils {
     private static final String PARAM_SORT_BY = "sort_by";
 
     private static final String apiKey = "";
-    public static final String mostPopular = "popularity.desc";
-    public static final String topRated = "vote_average.desc";
 
     public static URL buildUrl(String sortBy) {
         Uri uri = Uri.parse(BASE_URL)

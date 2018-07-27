@@ -9,34 +9,30 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.model.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
+import me.susieson.popularmovies.utils.JsonUtils;
 
 public class DetailActivity extends AppCompatActivity {
-
-    private ImageView mThumbnail;
-    private TextView mOverview;
-    private TextView mVoteAverage;
-    private TextView mReleaseDate;
-    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mThumbnail = findViewById(R.id.movie_poster_thumbnail);
-        mOverview = findViewById(R.id.overview);
-        mVoteAverage = findViewById(R.id.vote_average);
-        mReleaseDate = findViewById(R.id.release_date);
+        ImageView thumbnail = findViewById(R.id.movie_poster_thumbnail);
+        TextView overview1 = findViewById(R.id.overview);
+        TextView voteAverage1 = findViewById(R.id.vote_average);
+        TextView releaseDate1 = findViewById(R.id.release_date);
 
-        mActionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(MainActivity.EXTRA_POSITION)) {
-            int position = intent.getIntExtra(MainActivity.EXTRA_POSITION, -1);
-            Movie movie = MainActivity.mMovieArrayList.get(position);
+        if (intent.hasExtra(IntentExtraConstants.EXTRA_POSITION)) {
+            int position = intent.getIntExtra(IntentExtraConstants.EXTRA_POSITION, -1);
+            Movie movie = JsonUtils.getMovieList().get(position);
 
             String originalTitle = movie.getOriginalTitle();
             String posterPath = movie.getPosterPath();
@@ -44,14 +40,14 @@ public class DetailActivity extends AppCompatActivity {
             int voteAverage = movie.getVoteAverage();
             String releaseDate = movie.getReleaseDate();
 
-            mActionBar.setTitle(originalTitle);
+            actionBar.setTitle(originalTitle);
 
             String imageUrl = ImageUtils.buildUrl(posterPath);
-            Picasso.with(this).load(imageUrl).into(mThumbnail);
+            Picasso.with(this).load(imageUrl).into(thumbnail);
 
-            mOverview.setText(overview);
-            mVoteAverage.setText(String.valueOf(voteAverage));
-            mReleaseDate.setText(releaseDate);
+            overview1.setText(overview);
+            voteAverage1.setText(String.valueOf(voteAverage));
+            releaseDate1.setText(releaseDate);
         }
     }
 }
