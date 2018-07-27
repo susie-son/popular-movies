@@ -3,4 +3,14 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="progress_bar_dimen">42dp</dimen>
+    <dimen name="movie_image_width">185dp</dimen>
+    <dimen name="movie_image_height">270dp</dimen>
+    <dimen name="movie_thumbnail_width">90dp</dimen>
+    <dimen name="movie_thumbnail_height">135dp</dimen>
+    <dimen name="image_thumbnail_margin">48dp</dimen>
+    <dimen name="movie_overview_margin">24dp</dimen>
+    <dimen name="label_font_size">24sp</dimen>
+    <dimen name="release_date_font_size">18sp</dimen>
+    <dimen name="vote_average_font_size">18sp</dimen>
+    <dimen name="overview_font_size">18sp</dimen>
 </resources>
