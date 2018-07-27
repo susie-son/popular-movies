@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +42,25 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(mMovieAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sort_by, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int menuItemSelectedId = item.getItemId();
+
+        switch (menuItemSelectedId) {
+            case R.id.most_popular:
+                return true;
+            case R.id.top_rated:
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static class MovieQueryTask extends AsyncTask<URL, Void, String> {

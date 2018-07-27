@@ -3,4 +3,6 @@
     <string name="movie_poster_content_description">A movie poster image.</string>
     <string name="movie_poster_thumbnail_content_description">A movie poster thumbnail image.
     </string>
+    <string name="most_popular">Most Popular</string>
+    <string name="top_rated">Top Rated</string>
 </resources>
