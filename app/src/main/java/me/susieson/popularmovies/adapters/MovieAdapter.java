@@ -50,7 +50,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final String BASE_URL = "http://image.tmdb.org/t/p";
         private final String SIZE = "/w185";
@@ -69,7 +69,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             final String PATH = mMovieArrayList.get(position).getPosterPath();
             final String URL = BASE_URL + SIZE + PATH;
 
+            mImageView.setOnClickListener(this);
+
             Picasso.with(mContext).load(URL).into(mImageView);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
         }
     }
 }
