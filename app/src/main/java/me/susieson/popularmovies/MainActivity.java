@@ -20,6 +20,7 @@ import me.susieson.popularmovies.utils.NetworkUtils;
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "me.susieson.popularmovies.MainActivity.POSITION";
+    private static String currentPreference = NetworkUtils.mostPopular;
     private static final int MOVIE_POSTER_GRID_SPAN = 5;
 
     public static ArrayList<Movie> mMovieArrayList;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        URL builtUrl = NetworkUtils.buildUrl();
+        URL builtUrl = NetworkUtils.buildUrl(currentPreference);
         new MovieQueryTask().execute(builtUrl);
 
         RecyclerView recyclerView = findViewById(R.id.movies_rv);
@@ -54,10 +55,17 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemSelectedId = item.getItemId();
 
+        URL builtUrl;
         switch (menuItemSelectedId) {
             case R.id.most_popular:
+                currentPreference = NetworkUtils.mostPopular;
+                builtUrl = NetworkUtils.buildUrl(currentPreference);
+                new MovieQueryTask().execute(builtUrl);
                 return true;
             case R.id.top_rated:
+                currentPreference = NetworkUtils.topRated;
+                builtUrl = NetworkUtils.buildUrl(currentPreference);
+                new MovieQueryTask().execute(builtUrl);
                 return true;
         }
         return super.onOptionsItemSelected(item);
