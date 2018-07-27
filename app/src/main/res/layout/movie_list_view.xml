@@ -2,6 +2,6 @@
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/movie_poster_image"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="185dp"
+    android:layout_height="270dp"
     android:contentDescription="@string/movie_poster_content_description"/>

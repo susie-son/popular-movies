@@ -71,7 +71,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
             mImageView.setOnClickListener(this);
 
-            Picasso.with(mContext).load(URL).into(mImageView);
+            Picasso.with(mContext).load(URL).error(R.drawable.image_not_available).fit().into(mImageView);
         }
 
         @Override
