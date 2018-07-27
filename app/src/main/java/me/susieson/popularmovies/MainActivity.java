@@ -17,8 +17,10 @@ import me.susieson.popularmovies.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String EXTRA_POSITION = "me.susieson.popularmovies.MainActivity.POSITION";
     private static final int MOVIE_POSTER_GRID_SPAN = 5;
 
+    public static ArrayList<Movie> mMovieArrayList;
     private static MovieAdapter mMovieAdapter;
 
     @Override
@@ -31,8 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.movies_rv);
 
+        mMovieArrayList = new ArrayList<>();
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN);
-        mMovieAdapter = new MovieAdapter(new ArrayList<Movie>());
+        mMovieAdapter = new MovieAdapter(mMovieArrayList);
 
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(mMovieAdapter);
@@ -56,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            ArrayList<Movie> movieArrayList = JsonUtils.parseMovieJson(s);
+            mMovieArrayList = JsonUtils.parseMovieJson(s);
 
-            mMovieAdapter.updateData(movieArrayList);
+            mMovieAdapter.updateData(mMovieArrayList);
         }
     }
 }
