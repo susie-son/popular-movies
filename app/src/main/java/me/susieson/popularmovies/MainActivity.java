@@ -19,7 +19,7 @@ import me.susieson.popularmovies.utils.NetworkUtils;
 public class MainActivity extends AppCompatActivity {
 
     private static String currentPreference = PreferenceConstants.mostPopular;
-    private static final int MOVIE_POSTER_GRID_SPAN = 5;
+    private static final int MOVIE_POSTER_GRID_SPAN = 2;
 
     private static MovieAdapter mMovieAdapter;
 

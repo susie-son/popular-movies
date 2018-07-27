@@ -15,6 +15,7 @@ public class JsonUtils {
     public static void parseMovieJson(String json) {
         if (json == null) {
             mMovieArrayList = null;
+            return;
         }
 
         ArrayList<Movie> movies = new ArrayList<>();
