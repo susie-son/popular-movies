@@ -1,5 +1,6 @@
 package me.susieson.popularmovies;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,12 +15,15 @@ import android.widget.TextView;
 import java.net.URL;
 
 import me.susieson.popularmovies.adapters.MovieAdapter;
+import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.constants.PreferenceConstants;
+import me.susieson.popularmovies.model.Movie;
 import me.susieson.popularmovies.network.MovieQueryTask;
 import me.susieson.popularmovies.utils.JsonUtils;
 import me.susieson.popularmovies.utils.NetworkUtils;
 
-public class MainActivity extends AppCompatActivity implements MovieQueryTask.TaskProgress{
+public class MainActivity extends AppCompatActivity implements MovieQueryTask.TaskProgress,
+        MovieAdapter.OnItemClickListener {
 
     private static String currentPreference = PreferenceConstants.mostPopular;
     private static final int MOVIE_POSTER_GRID_SPAN_PORTRAIT = 2;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements MovieQueryTask.Ta
             gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN_LANDSCAPE);
         }
 
-        mMovieAdapter = new MovieAdapter(JsonUtils.getMovieList());
+        mMovieAdapter = new MovieAdapter(JsonUtils.getMovieList(), this);
 
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMovieAdapter);
@@ -123,5 +127,14 @@ public class MainActivity extends AppCompatActivity implements MovieQueryTask.Ta
         if (JsonUtils.getMovieList().isEmpty()) {
             showErrorMessage();
         }
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Movie selectedMovie = JsonUtils.getMovieList().get(position);
+
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
+        startActivity(intent);
     }
 }

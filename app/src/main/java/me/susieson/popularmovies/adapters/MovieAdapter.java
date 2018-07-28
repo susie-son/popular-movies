@@ -1,7 +1,6 @@
 package me.susieson.popularmovies.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,19 +12,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import me.susieson.popularmovies.DetailActivity;
 import me.susieson.popularmovies.R;
-import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.model.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
-import me.susieson.popularmovies.utils.JsonUtils;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     private static ArrayList<Movie> mMovieArrayList;
+    private final OnItemClickListener mOnItemClickListener;
 
-    public MovieAdapter(ArrayList<Movie> movieArrayList) {
+    public MovieAdapter(ArrayList<Movie> movieArrayList, OnItemClickListener onItemClickListener) {
         mMovieArrayList = movieArrayList;
+        mOnItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -41,7 +39,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(position);
+        holder.bind(position, mOnItemClickListener);
     }
 
     @Override
@@ -55,7 +53,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mImageView;
         private Context mContext;
@@ -67,22 +65,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             mContext = context;
         }
 
-        void bind(int position) {
+        void bind(final int position, final OnItemClickListener onItemClickListener) {
             final String URL = ImageUtils.buildUrl(mMovieArrayList.get(position).getPosterPath());
 
-            mImageView.setOnClickListener(this);
+            mImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemClickListener.onItemClick(position);
+                }
+            });
 
             Picasso.with(mContext).load(URL).error(R.drawable.image_not_available).into(mImageView);
         }
+    }
 
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            Movie selectedMovie = JsonUtils.getMovieList().get(position);
-
-            Intent intent = new Intent(mContext, DetailActivity.class);
-            intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
-            mContext.startActivity(intent);
-        }
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 }
