@@ -7,6 +7,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MOVIE_POSTER_GRID_SPAN = 2;
 
     private static MovieAdapter mMovieAdapter;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +35,11 @@ public class MainActivity extends AppCompatActivity {
         URL builtUrl = NetworkUtils.buildUrl(currentPreference);
         new MovieQueryTask().execute(builtUrl);
 
-        RecyclerView recyclerView = findViewById(R.id.movies_rv);
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN);
         mMovieAdapter = new MovieAdapter(JsonUtils.getMovieList());
 
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(mMovieAdapter);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setAdapter(mMovieAdapter);
     }
 
     @Override
@@ -66,7 +68,20 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class MovieQueryTask extends AsyncTask<URL, Void, String> {
+    public class MovieQueryTask extends AsyncTask<URL, Void, String> {
+
+        private ProgressBar mProgressBar;
+        private TextView mErrorMessage;
+
+        @Override
+        protected void onPreExecute() {
+            mErrorMessage = findViewById(R.id.main_loading_error);
+            mProgressBar = findViewById(R.id.main_progress_bar);
+            mRecyclerView = findViewById(R.id.movies_rv);
+
+            showProgressLoading();
+        }
+
         @Override
         protected String doInBackground(URL... urls) {
             URL url = urls[0];
@@ -86,7 +101,30 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             JsonUtils.parseMovieJson(s);
 
+            hideProgressLoading();
             mMovieAdapter.updateData(JsonUtils.getMovieList());
+
+            if (JsonUtils.getMovieList().isEmpty()) {
+                showErrorMessage();
+            }
+        }
+
+        private void showErrorMessage() {
+            mRecyclerView.setVisibility(View.GONE);
+            mErrorMessage.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+        }
+
+        private void showProgressLoading() {
+            mRecyclerView.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mErrorMessage.setVisibility(View.GONE);
+        }
+
+        private void hideProgressLoading() {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+            mErrorMessage.setVisibility(View.GONE);
         }
     }
 }

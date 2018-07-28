@@ -28,7 +28,7 @@ public class JsonUtils {
                 String originalTitle = result.getString("original_title");
                 String posterPath = result.getString("poster_path");
                 String overview = result.getString("overview");
-                int voteAverage = result.getInt("vote_average");
+                double voteAverage = result.getDouble("vote_average");
                 String releaseDate = result.getString("release_date");
                 Movie movie = new Movie(originalTitle, posterPath, overview, voteAverage, releaseDate);
                 movies.add(movie);
@@ -41,8 +41,9 @@ public class JsonUtils {
     }
 
     public static ArrayList<Movie> getMovieList() {
-        if (mMovieArrayList != null)
+        if (mMovieArrayList != null) {
             return mMovieArrayList;
+        }
         return new ArrayList<>();
     }
 }
