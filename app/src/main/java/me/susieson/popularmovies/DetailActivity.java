@@ -15,7 +15,6 @@ import java.util.Locale;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.model.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
-import me.susieson.popularmovies.utils.JsonUtils;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -41,15 +40,15 @@ public class DetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(IntentExtraConstants.EXTRA_POSITION)) {
-            int position = intent.getIntExtra(IntentExtraConstants.EXTRA_POSITION, -1);
-            Movie movie = JsonUtils.getMovieList().get(position);
+        if (intent.hasExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE)) {
 
-            String originalTitle = movie.getOriginalTitle();
-            String posterPath = movie.getPosterPath();
-            String overview = movie.getOverview();
-            double voteAverage = movie.getVoteAverage();
-            String releaseDate = movie.getReleaseDate();
+            Movie selectedMovie = getIntent().getParcelableExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE);
+
+            String originalTitle = selectedMovie.getOriginalTitle();
+            String posterPath = selectedMovie.getPosterPath();
+            String overview = selectedMovie.getOverview();
+            double voteAverage = selectedMovie.getVoteAverage();
+            String releaseDate = selectedMovie.getReleaseDate();
 
             if (actionBar!= null && originalTitle != null) {
                 actionBar.setTitle(originalTitle);
