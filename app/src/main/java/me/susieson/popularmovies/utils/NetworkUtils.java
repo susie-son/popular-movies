@@ -11,17 +11,16 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    private static final String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/movie";
     private static final String PARAM_API_KEY = "api_key";
-    private static final String PARAM_SORT_BY = "sort_by";
 
     private static final String apiKey = "";
 
     public static URL buildUrl(String sortBy) {
         Uri uri = Uri.parse(BASE_URL)
                 .buildUpon()
+                .appendPath(sortBy)
                 .appendQueryParameter(PARAM_API_KEY, apiKey)
-                .appendQueryParameter(PARAM_SORT_BY, sortBy)
                 .build();
 
         URL url = null;
