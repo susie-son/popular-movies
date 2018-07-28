@@ -1,7 +1,6 @@
 package me.susieson.popularmovies;
 
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,21 +11,21 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.IOException;
 import java.net.URL;
 
 import me.susieson.popularmovies.adapters.MovieAdapter;
 import me.susieson.popularmovies.constants.PreferenceConstants;
+import me.susieson.popularmovies.network.MovieQueryTask;
 import me.susieson.popularmovies.utils.JsonUtils;
 import me.susieson.popularmovies.utils.NetworkUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieQueryTask.TaskProgress{
 
     private static String currentPreference = PreferenceConstants.mostPopular;
     private static final int MOVIE_POSTER_GRID_SPAN_PORTRAIT = 2;
     private static final int MOVIE_POSTER_GRID_SPAN_LANDSCAPE = 3;
 
-    private static MovieAdapter mMovieAdapter;
+    private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
     private TextView mErrorMessage;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (NetworkUtils.isConnected(this)) {
             URL builtUrl = NetworkUtils.buildUrl(currentPreference);
-            new MovieQueryTask().execute(builtUrl);
+            new MovieQueryTask(this).execute(builtUrl);
         } else {
             showErrorMessage();
         }
@@ -77,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.most_popular:
                     currentPreference = PreferenceConstants.mostPopular;
                     builtUrl = NetworkUtils.buildUrl(currentPreference);
-                    new MovieQueryTask().execute(builtUrl);
+                    new MovieQueryTask(this).execute(builtUrl);
                     return true;
                 case R.id.top_rated:
                     currentPreference = PreferenceConstants.topRated;
                     builtUrl = NetworkUtils.buildUrl(currentPreference);
-                    new MovieQueryTask().execute(builtUrl);
+                    new MovieQueryTask(this).execute(builtUrl);
                     return true;
             }
         }
@@ -109,38 +108,20 @@ public class MainActivity extends AppCompatActivity {
         mErrorMessage.setVisibility(View.GONE);
     }
 
-    public class MovieQueryTask extends AsyncTask<URL, Void, String> {
+    @Override
+    public void onPreTask() {
+        showProgressLoading();
+    }
 
-        @Override
-        protected void onPreExecute() {
-            showProgressLoading();
-        }
+    @Override
+    public void onTaskCompleted(String response) {
+        JsonUtils.parseMovieJson(response);
 
-        @Override
-        protected String doInBackground(URL... urls) {
-            URL url = urls[0];
+        hideProgressLoading();
+        mMovieAdapter.updateData(JsonUtils.getMovieList());
 
-            String response = null;
-
-            try {
-                response = NetworkUtils.getHttpResponse(url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            JsonUtils.parseMovieJson(s);
-
-            hideProgressLoading();
-            mMovieAdapter.updateData(JsonUtils.getMovieList());
-
-            if (JsonUtils.getMovieList().isEmpty()) {
-                showErrorMessage();
-            }
+        if (JsonUtils.getMovieList().isEmpty()) {
+            showErrorMessage();
         }
     }
 }
