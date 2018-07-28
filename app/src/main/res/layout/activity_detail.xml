@@ -27,11 +27,15 @@
 
         <ImageView
             android:id="@+id/movie_poster_thumbnail"
-            android:layout_width="@dimen/movie_thumbnail_width"
-            android:layout_height="@dimen/movie_thumbnail_height"
-            android:contentDescription="@string/movie_poster_thumbnail_content_description"
-            android:layout_marginRight="@dimen/image_thumbnail_margin"
-            android:layout_marginEnd="@dimen/image_thumbnail_margin" />
+            android:layout_width="@dimen/thumbnail_width"
+            android:layout_height="@dimen/thumbnail_height"
+            android:paddingLeft="@dimen/thumbnail_padding_left"
+            android:paddingStart="@dimen/thumbnail_padding_left"
+            android:paddingTop="@dimen/thumbnail_padding_top"
+            android:paddingRight="@dimen/thumbnail_padding_right"
+            android:paddingEnd="@dimen/thumbnail_padding_right"
+            android:paddingBottom="@dimen/thumbnail_padding_bottom"
+            android:contentDescription="@string/movie_poster_thumbnail_content_description"/>
 
         <TextView
             android:id="@+id/release_date_label"
@@ -76,7 +80,6 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/label_font_size"
             android:layout_below="@id/movie_poster_thumbnail"
-            android:layout_marginTop="@dimen/movie_overview_margin"
             android:text="@string/overview_label"/>
 
         <TextView
