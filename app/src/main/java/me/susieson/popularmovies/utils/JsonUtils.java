@@ -41,8 +41,9 @@ public class JsonUtils {
     }
 
     public static ArrayList<Movie> getMovieList() {
-        if (mMovieArrayList != null)
+        if (mMovieArrayList != null) {
             return mMovieArrayList;
+        }
         return new ArrayList<>();
     }
 }
