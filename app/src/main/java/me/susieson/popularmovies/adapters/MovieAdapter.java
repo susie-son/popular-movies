@@ -18,6 +18,7 @@ import me.susieson.popularmovies.R;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.model.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
+import me.susieson.popularmovies.utils.JsonUtils;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
@@ -77,9 +78,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
+            Movie selectedMovie = JsonUtils.getMovieList().get(position);
 
             Intent intent = new Intent(mContext, DetailActivity.class);
-            intent.putExtra(IntentExtraConstants.EXTRA_POSITION, position);
+            intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
             mContext.startActivity(intent);
         }
     }
