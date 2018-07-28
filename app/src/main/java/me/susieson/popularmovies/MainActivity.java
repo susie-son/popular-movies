@@ -17,15 +17,16 @@ import java.net.URL;
 import me.susieson.popularmovies.adapters.MovieAdapter;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.constants.PreferenceConstants;
-import me.susieson.popularmovies.model.Movie;
+import me.susieson.popularmovies.interfaces.OnItemClickListener;
+import me.susieson.popularmovies.interfaces.TaskProgress;
+import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.network.MovieQueryTask;
 import me.susieson.popularmovies.utils.JsonUtils;
 import me.susieson.popularmovies.utils.NetworkUtils;
 
-public class MainActivity extends AppCompatActivity implements MovieQueryTask.TaskProgress,
-        MovieAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements TaskProgress, OnItemClickListener {
 
-    private static String currentPreference = PreferenceConstants.mostPopular;
+    private static String currentPreference = PreferenceConstants.MOST_POPULAR;
     private static final int MOVIE_POSTER_GRID_SPAN_PORTRAIT = 2;
     private static final int MOVIE_POSTER_GRID_SPAN_LANDSCAPE = 3;
 
@@ -78,12 +79,12 @@ public class MainActivity extends AppCompatActivity implements MovieQueryTask.Ta
             URL builtUrl;
             switch (menuItemSelectedId) {
                 case R.id.most_popular:
-                    currentPreference = PreferenceConstants.mostPopular;
+                    currentPreference = PreferenceConstants.MOST_POPULAR;
                     builtUrl = NetworkUtils.buildUrl(currentPreference);
                     new MovieQueryTask(this).execute(builtUrl);
                     return true;
                 case R.id.top_rated:
-                    currentPreference = PreferenceConstants.topRated;
+                    currentPreference = PreferenceConstants.TOP_RATED;
                     builtUrl = NetworkUtils.buildUrl(currentPreference);
                     new MovieQueryTask(this).execute(builtUrl);
                     return true;

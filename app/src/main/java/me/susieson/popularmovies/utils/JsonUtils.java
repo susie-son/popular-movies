@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import me.susieson.popularmovies.model.Movie;
+import me.susieson.popularmovies.models.Movie;
 
 public class JsonUtils {
 
@@ -30,7 +30,8 @@ public class JsonUtils {
                 String overview = result.getString("overview");
                 double voteAverage = result.getDouble("vote_average");
                 String releaseDate = result.getString("release_date");
-                Movie movie = new Movie(originalTitle, posterPath, overview, voteAverage, releaseDate);
+                Movie movie = new Movie(originalTitle, posterPath, overview, voteAverage,
+                        releaseDate);
                 movies.add(movie);
             }
         } catch (JSONException e) {
