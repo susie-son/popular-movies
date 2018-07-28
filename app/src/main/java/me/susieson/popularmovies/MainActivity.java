@@ -28,14 +28,24 @@ public class MainActivity extends AppCompatActivity {
 
     private static MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
+    private TextView mErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        URL builtUrl = NetworkUtils.buildUrl(currentPreference);
-        new MovieQueryTask().execute(builtUrl);
+        mErrorMessage = findViewById(R.id.main_loading_error);
+        mProgressBar = findViewById(R.id.main_progress_bar);
+        mRecyclerView = findViewById(R.id.movies_rv);
+
+        if (NetworkUtils.isConnected(this)) {
+            URL builtUrl = NetworkUtils.buildUrl(currentPreference);
+            new MovieQueryTask().execute(builtUrl);
+        } else {
+            showErrorMessage();
+        }
 
         GridLayoutManager gridLayoutManager;
 
@@ -59,35 +69,50 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int menuItemSelectedId = item.getItemId();
+        if (NetworkUtils.isConnected(this)) {
+            int menuItemSelectedId = item.getItemId();
 
-        URL builtUrl;
-        switch (menuItemSelectedId) {
-            case R.id.most_popular:
-                currentPreference = PreferenceConstants.mostPopular;
-                builtUrl = NetworkUtils.buildUrl(currentPreference);
-                new MovieQueryTask().execute(builtUrl);
-                return true;
-            case R.id.top_rated:
-                currentPreference = PreferenceConstants.topRated;
-                builtUrl = NetworkUtils.buildUrl(currentPreference);
-                new MovieQueryTask().execute(builtUrl);
-                return true;
+            URL builtUrl;
+            switch (menuItemSelectedId) {
+                case R.id.most_popular:
+                    currentPreference = PreferenceConstants.mostPopular;
+                    builtUrl = NetworkUtils.buildUrl(currentPreference);
+                    new MovieQueryTask().execute(builtUrl);
+                    return true;
+                case R.id.top_rated:
+                    currentPreference = PreferenceConstants.topRated;
+                    builtUrl = NetworkUtils.buildUrl(currentPreference);
+                    new MovieQueryTask().execute(builtUrl);
+                    return true;
+            }
         }
+
+        showErrorMessage();
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showErrorMessage() {
+        mRecyclerView.setVisibility(View.GONE);
+        mErrorMessage.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    private void showProgressLoading() {
+        mRecyclerView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mErrorMessage.setVisibility(View.GONE);
+    }
+
+    private void hideProgressLoading() {
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
+        mErrorMessage.setVisibility(View.GONE);
     }
 
     public class MovieQueryTask extends AsyncTask<URL, Void, String> {
 
-        private ProgressBar mProgressBar;
-        private TextView mErrorMessage;
-
         @Override
         protected void onPreExecute() {
-            mErrorMessage = findViewById(R.id.main_loading_error);
-            mProgressBar = findViewById(R.id.main_progress_bar);
-            mRecyclerView = findViewById(R.id.movies_rv);
-
             showProgressLoading();
         }
 
@@ -116,24 +141,6 @@ public class MainActivity extends AppCompatActivity {
             if (JsonUtils.getMovieList().isEmpty()) {
                 showErrorMessage();
             }
-        }
-
-        private void showErrorMessage() {
-            mRecyclerView.setVisibility(View.GONE);
-            mErrorMessage.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.GONE);
-        }
-
-        private void showProgressLoading() {
-            mRecyclerView.setVisibility(View.GONE);
-            mProgressBar.setVisibility(View.VISIBLE);
-            mErrorMessage.setVisibility(View.GONE);
-        }
-
-        private void hideProgressLoading() {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.GONE);
-            mErrorMessage.setVisibility(View.GONE);
         }
     }
 }
