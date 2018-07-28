@@ -13,7 +13,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import me.susieson.popularmovies.R;
-import me.susieson.popularmovies.model.Movie;
+import me.susieson.popularmovies.interfaces.OnItemClickListener;
+import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
@@ -55,8 +56,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView mImageView;
-        private Context mContext;
+        private final ImageView mImageView;
+        private final Context mContext;
 
         ViewHolder(View itemView, Context context) {
             super(itemView);
@@ -77,9 +78,5 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
             Picasso.with(mContext).load(URL).error(R.drawable.image_not_available).into(mImageView);
         }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
     }
 }

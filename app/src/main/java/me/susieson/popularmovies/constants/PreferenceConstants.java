@@ -1,6 +1,6 @@
 package me.susieson.popularmovies.constants;
 
 public class PreferenceConstants {
-    public static final String mostPopular = "popular";
-    public static final String topRated = "top_rated";
+    public static final String MOST_POPULAR = "popular";
+    public static final String TOP_RATED = "top_rated";
 }

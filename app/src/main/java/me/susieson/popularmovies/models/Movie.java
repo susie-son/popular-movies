@@ -1,17 +1,18 @@
-package me.susieson.popularmovies.model;
+package me.susieson.popularmovies.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Movie implements Parcelable {
 
-    private String originalTitle;
-    private String posterPath;
-    private String overview;
-    private double voteAverage;
-    private String releaseDate;
+    private final String originalTitle;
+    private final String posterPath;
+    private final String overview;
+    private final double voteAverage;
+    private final String releaseDate;
 
-    public Movie(String originalTitle, String posterPath, String overview, double voteAverage, String releaseDate) {
+    public Movie(String originalTitle, String posterPath, String overview, double voteAverage,
+            String releaseDate) {
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
         this.overview = overview;

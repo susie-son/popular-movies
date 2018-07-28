@@ -5,11 +5,12 @@ import android.os.AsyncTask;
 import java.io.IOException;
 import java.net.URL;
 
+import me.susieson.popularmovies.interfaces.TaskProgress;
 import me.susieson.popularmovies.utils.NetworkUtils;
 
 public class MovieQueryTask extends AsyncTask<URL, Void, String> {
 
-    private TaskProgress mTaskProgress;
+    private final TaskProgress mTaskProgress;
 
     public MovieQueryTask(TaskProgress taskProgress) {
         mTaskProgress = taskProgress;
@@ -38,10 +39,5 @@ public class MovieQueryTask extends AsyncTask<URL, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         mTaskProgress.onTaskCompleted(s);
-    }
-
-    public interface TaskProgress {
-        void onPreTask();
-        void onTaskCompleted(String response);
     }
 }

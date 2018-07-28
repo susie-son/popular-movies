@@ -61,7 +61,8 @@ public class NetworkUtils {
     }
 
     public static boolean isConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
 
         if (cm != null) {
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
