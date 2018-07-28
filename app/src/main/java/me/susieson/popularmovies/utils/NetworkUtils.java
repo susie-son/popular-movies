@@ -12,12 +12,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import me.susieson.popularmovies.BuildConfig;
+
 public class NetworkUtils {
 
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie";
     private static final String PARAM_API_KEY = "api_key";
 
-    private static final String apiKey = "";
+    private static final String apiKey = BuildConfig.TMDB_API_KEY;
 
     public static URL buildUrl(String sortBy) {
         Uri uri = Uri.parse(BASE_URL)
