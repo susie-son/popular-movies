@@ -1,5 +1,6 @@
 package me.susieson.popularmovies;
 
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +23,8 @@ import me.susieson.popularmovies.utils.NetworkUtils;
 public class MainActivity extends AppCompatActivity {
 
     private static String currentPreference = PreferenceConstants.mostPopular;
-    private static final int MOVIE_POSTER_GRID_SPAN = 2;
+    private static final int MOVIE_POSTER_GRID_SPAN_PORTRAIT = 2;
+    private static final int MOVIE_POSTER_GRID_SPAN_LANDSCAPE = 3;
 
     private static MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
@@ -35,7 +37,14 @@ public class MainActivity extends AppCompatActivity {
         URL builtUrl = NetworkUtils.buildUrl(currentPreference);
         new MovieQueryTask().execute(builtUrl);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN);
+        GridLayoutManager gridLayoutManager;
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN_PORTRAIT);
+        } else {
+            gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN_LANDSCAPE);
+        }
+
         mMovieAdapter = new MovieAdapter(JsonUtils.getMovieList());
 
         mRecyclerView.setLayoutManager(gridLayoutManager);
