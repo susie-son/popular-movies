@@ -35,7 +35,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         View view = layoutInflater.inflate(R.layout.movie_list_view, parent, false);
 
-        return new ViewHolder(view, context);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -57,13 +57,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView mImageView;
-        private final Context mContext;
 
-        ViewHolder(View itemView, Context context) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             mImageView = itemView.findViewById(R.id.movie_poster_image);
-            mContext = context;
         }
 
         void bind(final int position, final OnItemClickListener onItemClickListener) {
@@ -76,7 +74,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 }
             });
 
-            Picasso.with(mContext).load(URL).error(R.drawable.image_not_available).into(mImageView);
+            Picasso.with(itemView.getContext()).load(URL).error(R.drawable.image_not_available).into(mImageView);
         }
     }
 }
