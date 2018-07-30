@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
 
         hideProgressLoading();
         mMovieAdapter.updateData(mMovieArrayList);
+        mRecyclerView.scrollToPosition(0);
 
         if (mMovieArrayList.isEmpty()) {
             showErrorMessage();
