@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
     private TextView mErrorMessage;
+    private Button mRetryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +50,16 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
         mErrorMessage = findViewById(R.id.main_loading_error);
         mProgressBar = findViewById(R.id.main_progress_bar);
         mRecyclerView = findViewById(R.id.movies_rv);
+        mRetryButton = findViewById(R.id.retry_button);
 
-        if (NetworkUtils.isConnected(this)) {
-            URL builtUrl = NetworkUtils.buildUrl(currentPreference);
-            new MovieQueryTask(this).execute(builtUrl);
-        } else {
-            showErrorMessage();
-        }
+        mRetryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tryConnection(currentPreference);
+            }
+        });
+
+        tryConnection(currentPreference);
 
         GridLayoutManager gridLayoutManager;
 
@@ -80,25 +85,18 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (NetworkUtils.isConnected(this)) {
-            int menuItemSelectedId = item.getItemId();
+        int menuItemSelectedId = item.getItemId();
 
-            URL builtUrl;
-            switch (menuItemSelectedId) {
-                case R.id.most_popular:
-                    currentPreference = PreferenceConstants.MOST_POPULAR;
-                    builtUrl = NetworkUtils.buildUrl(currentPreference);
-                    new MovieQueryTask(this).execute(builtUrl);
-                    return true;
-                case R.id.top_rated:
-                    currentPreference = PreferenceConstants.TOP_RATED;
-                    builtUrl = NetworkUtils.buildUrl(currentPreference);
-                    new MovieQueryTask(this).execute(builtUrl);
-                    return true;
-            }
+        switch (menuItemSelectedId) {
+            case R.id.most_popular:
+                currentPreference = PreferenceConstants.MOST_POPULAR;
+                tryConnection(currentPreference);
+                return true;
+            case R.id.top_rated:
+                currentPreference = PreferenceConstants.TOP_RATED;
+                tryConnection(currentPreference);
+                return true;
         }
-
-        showErrorMessage();
         return super.onOptionsItemSelected(item);
     }
 
@@ -118,18 +116,21 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
         mRecyclerView.setVisibility(View.GONE);
         mErrorMessage.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
+        mRetryButton.setVisibility(View.VISIBLE);
     }
 
     private void showProgressLoading() {
         mRecyclerView.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);
         mErrorMessage.setVisibility(View.GONE);
+        mRetryButton.setVisibility(View.GONE);
     }
 
     private void hideProgressLoading() {
         mRecyclerView.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
         mErrorMessage.setVisibility(View.GONE);
+        mRetryButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -156,5 +157,15 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
         startActivity(intent);
+    }
+
+    private void tryConnection(String preference) {
+        showProgressLoading();
+        if (NetworkUtils.isConnected(this)) {
+            URL builtUrl = NetworkUtils.buildUrl(preference);
+            new MovieQueryTask(this).execute(builtUrl);
+        } else {
+            showErrorMessage();
+        }
     }
 }
