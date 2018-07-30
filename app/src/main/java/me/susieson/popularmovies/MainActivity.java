@@ -1,7 +1,6 @@
 package me.susieson.popularmovies;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,6 +17,7 @@ import com.google.gson.Gson;
 import java.net.URL;
 import java.util.ArrayList;
 
+import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,8 +34,6 @@ import me.susieson.popularmovies.utils.NetworkUtils;
 public class MainActivity extends AppCompatActivity implements TaskProgress, OnItemClickListener {
 
     private static String currentPreference = PreferenceConstants.MOST_POPULAR;
-    private static final int MOVIE_POSTER_GRID_SPAN_PORTRAIT = 2;
-    private static final int MOVIE_POSTER_GRID_SPAN_LANDSCAPE = 3;
 
     private ArrayList<Movie> mMovieArrayList;
 
@@ -53,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
     @BindView(R.id.retry_button)
     Button mRetryButton;
 
+    @BindInt(R.integer.movie_poster_grid_span)
+    int gridSpan;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,11 +64,7 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
 
         GridLayoutManager gridLayoutManager;
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN_PORTRAIT);
-        } else {
-            gridLayoutManager = new GridLayoutManager(this, MOVIE_POSTER_GRID_SPAN_LANDSCAPE);
-        }
+        gridLayoutManager = new GridLayoutManager(this, gridSpan);
 
         mMovieArrayList = new ArrayList<>();
 
