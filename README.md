@@ -7,5 +7,5 @@ In order to use this app, you will need an API key. You can [sign up](https://ww
 You can include your own API key by adding a new line in `gradle.properties` like this:
 
 ```
-TMDB_API_KEY="1234567890"
+TMDB_API_KEY=1234567890
 ```
