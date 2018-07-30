@@ -12,4 +12,5 @@
     <string name="vote_average_label">Rating</string>
     <string name="overview_label">Overview</string>
     <string name="vote_average_out_of">%.1f / 10</string>
+    <string name="retry">Retry</string>
 </resources>
