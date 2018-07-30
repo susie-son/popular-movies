@@ -12,23 +12,34 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.utils.ImageUtils;
 
 public class DetailActivity extends AppCompatActivity {
 
+    @BindView(R.id.movie_poster_thumbnail)
+    ImageView mThumbnail;
+
+    @BindView(R.id.overview)
+    TextView mOverviewTv;
+
+    @BindView(R.id.vote_average)
+    TextView mVoteAverageTv;
+
+    @BindView(R.id.release_date)
+    TextView mReleaseDateTv;
+
+    @BindView(R.id.movie_detail_no_info)
+    TextView mErrorMessageTv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        ImageView thumbnail = findViewById(R.id.movie_poster_thumbnail);
-        TextView overviewTv = findViewById(R.id.overview);
-        TextView voteAverageTv = findViewById(R.id.vote_average);
-        TextView releaseDateTv = findViewById(R.id.release_date);
-
-        TextView errorMessage = findViewById(R.id.movie_detail_no_info);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -51,26 +62,26 @@ public class DetailActivity extends AppCompatActivity {
 
             String imageUrl = ImageUtils.buildUrl(posterPath);
             Picasso.with(this).load(imageUrl).error(R.drawable.image_not_available).into(
-                    thumbnail);
+                    mThumbnail);
 
             if (overview != null && !overview.equals("")) {
-                overviewTv.setText(overview);
+                mOverviewTv.setText(overview);
             } else {
-                overviewTv.setText(R.string.not_available);
+                mOverviewTv.setText(R.string.not_available);
             }
 
-            voteAverageTv.setText(
+            mVoteAverageTv.setText(
                     String.format(Locale.getDefault(), getString(R.string.vote_average_out_of),
                             voteAverage));
 
             if (releaseDate != null && !releaseDate.equals("")) {
-                releaseDateTv.setText(releaseDate);
+                mReleaseDateTv.setText(releaseDate);
             } else {
-                releaseDateTv.setText(R.string.not_available);
+                mReleaseDateTv.setText(R.string.not_available);
             }
 
         } else {
-            errorMessage.setVisibility(View.VISIBLE);
+            mErrorMessageTv.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -12,6 +12,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.susieson.popularmovies.R;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
@@ -56,19 +58,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView mImageView;
+        @BindView(R.id.movie_poster_image)
+        ImageView mImageView;
 
         ViewHolder(View itemView) {
             super(itemView);
-
-            mImageView = itemView.findViewById(R.id.movie_poster_image);
+            ButterKnife.bind(this, itemView);
         }
 
         void bind(final int position, final OnItemClickListener onItemClickListener) {
             final String URL = ImageUtils.buildUrl(mMovieArrayList.get(position).getPosterPath());
 
             mImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View view) {
                     onItemClickListener.onItemClick(position);
                 }
