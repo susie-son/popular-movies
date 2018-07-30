@@ -18,6 +18,9 @@ import com.google.gson.Gson;
 import java.net.URL;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.susieson.popularmovies.adapters.MovieAdapter;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.constants.PreferenceConstants;
@@ -37,27 +40,24 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
     private ArrayList<Movie> mMovieArrayList;
 
     private MovieAdapter mMovieAdapter;
-    private RecyclerView mRecyclerView;
-    private ProgressBar mProgressBar;
-    private TextView mErrorMessage;
-    private Button mRetryButton;
+
+    @BindView(R.id.movies_rv)
+    RecyclerView mRecyclerView;
+
+    @BindView(R.id.main_progress_bar)
+    ProgressBar mProgressBar;
+
+    @BindView(R.id.main_loading_error)
+    TextView mErrorMessage;
+
+    @BindView(R.id.retry_button)
+    Button mRetryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mErrorMessage = findViewById(R.id.main_loading_error);
-        mProgressBar = findViewById(R.id.main_progress_bar);
-        mRecyclerView = findViewById(R.id.movies_rv);
-        mRetryButton = findViewById(R.id.retry_button);
-
-        mRetryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tryConnection(currentPreference);
-            }
-        });
+        ButterKnife.bind(this);
 
         tryConnection(currentPreference);
 
@@ -157,6 +157,11 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.retry_button)
+    public void retryConnection(View view) {
+        tryConnection(currentPreference);
     }
 
     private void tryConnection(String preference) {
