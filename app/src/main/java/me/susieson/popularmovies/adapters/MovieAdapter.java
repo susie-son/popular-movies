@@ -51,8 +51,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public void updateData(ArrayList<Movie> movieArrayList) {
-        mMovieArrayList.clear();
-        mMovieArrayList.addAll(movieArrayList);
+        mMovieArrayList = movieArrayList;
         notifyDataSetChanged();
     }
 
