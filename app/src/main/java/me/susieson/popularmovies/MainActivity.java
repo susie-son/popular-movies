@@ -23,7 +23,7 @@ import me.susieson.popularmovies.adapters.MovieAdapter;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.constants.PreferenceConstants;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
-import me.susieson.popularmovies.models.JsonResponse;
+import me.susieson.popularmovies.models.MovieResponse;
 import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.network.GetMovieData;
 import me.susieson.popularmovies.network.RetrofitClientInstance;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     private MovieAdapter mMovieAdapter;
 
-    private Callback<JsonResponse> mCallback;
+    private Callback<MovieResponse> mCallback;
 
     @BindView(R.id.movies_rv)
     RecyclerView mRecyclerView;
@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         mMovieArrayList = new ArrayList<>();
 
-        mCallback = new Callback<JsonResponse>() {
+        mCallback = new Callback<MovieResponse>() {
             @Override
-            public void onResponse(@NonNull Call<JsonResponse> call,
-                    @NonNull Response<JsonResponse> response) {
+            public void onResponse(@NonNull Call<MovieResponse> call,
+                    @NonNull Response<MovieResponse> response) {
                 hideProgressLoading();
 
                 if (response.body() != null) {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
 
             @Override
-            public void onFailure(@NonNull Call<JsonResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) {
                 showErrorMessage();
             }
         };
@@ -165,13 +165,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             if (preference.equals(PreferenceConstants.MOST_POPULAR)) {
                 GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
                         GetMovieData.class);
-                Call<JsonResponse> call = getMovieData.getMostPopularMovies(
+                Call<MovieResponse> call = getMovieData.getMostPopularMovies(
                         BuildConfig.TMDB_API_KEY);
                 call.enqueue(mCallback);
             } else if (preference.equals(PreferenceConstants.TOP_RATED)) {
                 GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
                         GetMovieData.class);
-                Call<JsonResponse> call = getMovieData.getTopRatedMovies(BuildConfig.TMDB_API_KEY);
+                Call<MovieResponse> call = getMovieData.getTopRatedMovies(BuildConfig.TMDB_API_KEY);
                 call.enqueue(mCallback);
             }
         } else {

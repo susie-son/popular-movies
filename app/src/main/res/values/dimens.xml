@@ -14,5 +14,6 @@
     <dimen name="thumbnail_width">185dp</dimen>
     <dimen name="thumbnail_height">270dp</dimen>
     <dimen name="button_margin">16dp</dimen>
+    <dimen name="recycler_view_margin">16dp</dimen>
     <integer name="movie_poster_grid_span">2</integer>
 </resources>
