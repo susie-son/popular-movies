@@ -13,4 +13,5 @@
     <string name="overview_label">Overview</string>
     <string name="vote_average_out_of">%.1f / 10</string>
     <string name="retry">Retry</string>
+    <string name="trailer_error">Cannot play video!</string>
 </resources>

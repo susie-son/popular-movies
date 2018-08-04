@@ -1,6 +1,8 @@
 package me.susieson.popularmovies;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -18,10 +21,14 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.susieson.popularmovies.adapters.ReviewAdapter;
+import me.susieson.popularmovies.adapters.TrailerAdapter;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
+import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.models.Review;
 import me.susieson.popularmovies.models.ReviewResponse;
+import me.susieson.popularmovies.models.Trailer;
+import me.susieson.popularmovies.models.TrailerResponse;
 import me.susieson.popularmovies.network.GetMovieData;
 import me.susieson.popularmovies.network.RetrofitClientInstance;
 import me.susieson.popularmovies.utils.ImageUtils;
@@ -30,7 +37,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements OnItemClickListener {
 
     @BindView(R.id.movie_poster_thumbnail)
     ImageView mThumbnail;
@@ -50,8 +57,14 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.reviews_rv)
     RecyclerView mReviewRecyclerView;
 
+    @BindView(R.id.trailers_rv)
+    RecyclerView mTrailerRecyclerView;
+
     ArrayList<Review> mReviewArrayList;
     ReviewAdapter mReviewAdapter;
+
+    ArrayList<Trailer> mTrailerArrayList;
+    TrailerAdapter mTrailerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,19 +113,39 @@ public class DetailActivity extends AppCompatActivity {
             }
 
             mReviewArrayList = new ArrayList<>();
+            mTrailerArrayList = new ArrayList<>();
 
             tryConnection(id);
 
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(this);
+            LinearLayoutManager trailerLayoutManager = new LinearLayoutManager(this);
 
             mReviewAdapter = new ReviewAdapter(mReviewArrayList);
+            mTrailerAdapter = new TrailerAdapter(mTrailerArrayList, this);
 
             mReviewRecyclerView.setNestedScrollingEnabled(false);
-            mReviewRecyclerView.setLayoutManager(layoutManager);
+            mReviewRecyclerView.setLayoutManager(reviewLayoutManager);
             mReviewRecyclerView.setAdapter(mReviewAdapter);
+            mTrailerRecyclerView.setNestedScrollingEnabled(false);
+            mTrailerRecyclerView.setLayoutManager(trailerLayoutManager);
+            mTrailerRecyclerView.setAdapter(mTrailerAdapter);
 
         } else {
             mErrorMessageTv.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Trailer trailer = mTrailerArrayList.get(position);
+        String id = trailer.getKey();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Toast.makeText(this, R.string.trailer_error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -120,8 +153,9 @@ public class DetailActivity extends AppCompatActivity {
         if (NetworkUtils.isConnected(this)) {
             GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
                     GetMovieData.class);
-            Call<ReviewResponse> call = getMovieData.getReviews(id, BuildConfig.TMDB_API_KEY);
-            call.enqueue(new Callback<ReviewResponse>() {
+
+            Call<ReviewResponse> reviewCall = getMovieData.getReviews(id, BuildConfig.TMDB_API_KEY);
+            reviewCall.enqueue(new Callback<ReviewResponse>() {
                 @Override
                 public void onResponse(Call<ReviewResponse> call,
                         Response<ReviewResponse> response) {
@@ -131,6 +165,22 @@ public class DetailActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ReviewResponse> call, Throwable t) {
+
+                }
+            });
+
+            Call<TrailerResponse> trailerCall = getMovieData.getTrailers(id,
+                    BuildConfig.TMDB_API_KEY);
+            trailerCall.enqueue(new Callback<TrailerResponse>() {
+                @Override
+                public void onResponse(Call<TrailerResponse> call,
+                        Response<TrailerResponse> response) {
+                    mTrailerArrayList = response.body().getResults();
+                    mTrailerAdapter.updateData(mTrailerArrayList);
+                }
+
+                @Override
+                public void onFailure(Call<TrailerResponse> call, Throwable t) {
 
                 }
             });

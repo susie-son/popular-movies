@@ -2,6 +2,7 @@ package me.susieson.popularmovies.network;
 
 import me.susieson.popularmovies.models.MovieResponse;
 import me.susieson.popularmovies.models.ReviewResponse;
+import me.susieson.popularmovies.models.TrailerResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -17,5 +18,9 @@ public interface GetMovieData {
 
     @GET("3/movie/{movie_id}/reviews")
     Call<ReviewResponse> getReviews(@Path("movie_id") int movieId, @Query("api_key") String apiKey);
+
+    @GET("3/movie/{movie_id}/videos")
+    Call<TrailerResponse> getTrailers(@Path("movie_id") int movieId,
+            @Query("api_key") String apiKey);
 
 }
