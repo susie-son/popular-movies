@@ -2,6 +2,7 @@ package me.susieson.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,9 +13,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
-import java.net.URL;
 import java.util.ArrayList;
 
 import butterknife.BindInt;
@@ -25,19 +23,24 @@ import me.susieson.popularmovies.adapters.MovieAdapter;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.constants.PreferenceConstants;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
-import me.susieson.popularmovies.interfaces.TaskProgress;
 import me.susieson.popularmovies.models.JsonResponse;
 import me.susieson.popularmovies.models.Movie;
-import me.susieson.popularmovies.network.MovieQueryTask;
+import me.susieson.popularmovies.network.GetMovieData;
+import me.susieson.popularmovies.network.RetrofitClientInstance;
 import me.susieson.popularmovies.utils.NetworkUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements TaskProgress, OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements OnItemClickListener {
 
     private static String currentPreference = PreferenceConstants.MOST_POPULAR;
 
     private ArrayList<Movie> mMovieArrayList;
 
     private MovieAdapter mMovieAdapter;
+
+    private Callback<JsonResponse> mCallback;
 
     @BindView(R.id.movies_rv)
     RecyclerView mRecyclerView;
@@ -60,13 +63,37 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mMovieArrayList = new ArrayList<>();
+
+        mCallback = new Callback<JsonResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonResponse> call,
+                    @NonNull Response<JsonResponse> response) {
+                hideProgressLoading();
+
+                if (response.body() != null) {
+                    mMovieArrayList = response.body().getResults();
+                }
+
+                mMovieAdapter.updateData(mMovieArrayList);
+                mRecyclerView.scrollToPosition(0);
+
+                if (mMovieArrayList.isEmpty()) {
+                    showErrorMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonResponse> call, @NonNull Throwable t) {
+                showErrorMessage();
+            }
+        };
+
         tryConnection(currentPreference);
 
         GridLayoutManager gridLayoutManager;
 
         gridLayoutManager = new GridLayoutManager(this, gridSpan);
-
-        mMovieArrayList = new ArrayList<>();
 
         mMovieAdapter = new MovieAdapter(mMovieArrayList, this);
 
@@ -97,18 +124,6 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
         return super.onOptionsItemSelected(item);
     }
 
-    private void parseMovieJson(String json) {
-        if (json == null) {
-            mMovieArrayList = null;
-            return;
-        }
-
-        Gson gson = new Gson();
-        JsonResponse jsonResponse = gson.fromJson(json, JsonResponse.class);
-
-        mMovieArrayList = jsonResponse.getResults();
-    }
-
     private void showErrorMessage() {
         mRecyclerView.setVisibility(View.GONE);
         mErrorMessage.setVisibility(View.VISIBLE);
@@ -131,24 +146,6 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
     }
 
     @Override
-    public void onPreTask() {
-        showProgressLoading();
-    }
-
-    @Override
-    public void onTaskCompleted(String response) {
-        parseMovieJson(response);
-
-        hideProgressLoading();
-        mMovieAdapter.updateData(mMovieArrayList);
-        mRecyclerView.scrollToPosition(0);
-
-        if (mMovieArrayList.isEmpty()) {
-            showErrorMessage();
-        }
-    }
-
-    @Override
     public void onItemClick(int position) {
         Movie selectedMovie = mMovieArrayList.get(position);
 
@@ -165,8 +162,18 @@ public class MainActivity extends AppCompatActivity implements TaskProgress, OnI
     private void tryConnection(String preference) {
         showProgressLoading();
         if (NetworkUtils.isConnected(this)) {
-            URL builtUrl = NetworkUtils.buildUrl(preference);
-            new MovieQueryTask(this).execute(builtUrl);
+            if (preference.equals(PreferenceConstants.MOST_POPULAR)) {
+                GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
+                        GetMovieData.class);
+                Call<JsonResponse> call = getMovieData.getMostPopularMovies(
+                        BuildConfig.TMDB_API_KEY);
+                call.enqueue(mCallback);
+            } else if (preference.equals(PreferenceConstants.TOP_RATED)) {
+                GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
+                        GetMovieData.class);
+                Call<JsonResponse> call = getMovieData.getTopRatedMovies(BuildConfig.TMDB_API_KEY);
+                call.enqueue(mCallback);
+            }
         } else {
             showErrorMessage();
         }
