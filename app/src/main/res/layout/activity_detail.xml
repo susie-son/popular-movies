@@ -89,10 +89,17 @@
             android:textSize="@dimen/overview_font_size"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/reviews_rv"
+            android:id="@+id/trailers_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/overview"
+            android:layout_marginTop="@dimen/recycler_view_margin"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reviews_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/trailers_rv"
             android:layout_marginTop="@dimen/recycler_view_margin"/>
 
     </RelativeLayout>
