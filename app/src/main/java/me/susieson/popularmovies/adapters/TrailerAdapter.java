@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -58,6 +59,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         @BindView(R.id.trailer_name)
         TextView trailerNameTextView;
 
+        @BindView(R.id.trailer_play_icon)
+        ImageView playIcon;
+
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -68,7 +72,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
             trailerNameTextView.setText(trailer.getName());
 
-            trailerNameTextView.setOnClickListener(new View.OnClickListener() {
+            playIcon.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     onItemClickListener.onItemClick(position);
                 }
