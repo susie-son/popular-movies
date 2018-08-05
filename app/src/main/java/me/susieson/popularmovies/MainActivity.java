@@ -1,7 +1,9 @@
 package me.susieson.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,13 +36,15 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener {
 
-    private static String currentPreference = PreferenceConstants.MOST_POPULAR;
+    private static final String SORT_BY = "sort-by";
 
     private ArrayList<Movie> mMovieArrayList;
 
     private MovieAdapter mMovieAdapter;
 
     private Callback<MovieResponse> mCallback;
+
+    private SharedPreferences mSharedPreferences;
 
     @BindView(R.id.movies_rv)
     RecyclerView mRecyclerView;
@@ -62,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         mMovieArrayList = new ArrayList<>();
 
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
         };
 
-        tryConnection(currentPreference);
+        tryConnection(mSharedPreferences.getString(SORT_BY, PreferenceConstants.MOST_POPULAR));
 
         GridLayoutManager gridLayoutManager;
 
@@ -111,14 +117,18 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemSelectedId = item.getItemId();
 
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+
         switch (menuItemSelectedId) {
             case R.id.most_popular:
-                currentPreference = PreferenceConstants.MOST_POPULAR;
-                tryConnection(currentPreference);
+                editor.putString(SORT_BY, PreferenceConstants.MOST_POPULAR);
+                editor.apply();
+                tryConnection(PreferenceConstants.MOST_POPULAR);
                 return true;
             case R.id.top_rated:
-                currentPreference = PreferenceConstants.TOP_RATED;
-                tryConnection(currentPreference);
+                editor.putString(SORT_BY, PreferenceConstants.TOP_RATED);
+                editor.apply();
+                tryConnection(PreferenceConstants.TOP_RATED);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -156,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     @OnClick(R.id.retry_button)
     public void retryConnection(View view) {
-        tryConnection(currentPreference);
+        tryConnection(mSharedPreferences.getString(SORT_BY, PreferenceConstants.MOST_POPULAR));
     }
 
     private void tryConnection(String preference) {
