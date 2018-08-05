@@ -3,17 +3,13 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="progress_bar_dimen">42dp</dimen>
-    <dimen name="label_font_size">24sp</dimen>
-    <dimen name="release_date_font_size">18sp</dimen>
-    <dimen name="vote_average_font_size">18sp</dimen>
-    <dimen name="overview_font_size">18sp</dimen>
-    <dimen name="thumbnail_padding_top">8dp</dimen>
-    <dimen name="thumbnail_padding_right">36dp</dimen>
-    <dimen name="thumbnail_padding_bottom">36dp</dimen>
-    <dimen name="thumbnail_padding_left">0dp</dimen>
-    <dimen name="thumbnail_width">185dp</dimen>
-    <dimen name="thumbnail_height">270dp</dimen>
-    <dimen name="button_margin">16dp</dimen>
-    <dimen name="recycler_view_margin">16dp</dimen>
+    <dimen name="movie_thumbnail_margin">32dp</dimen>
+    <dimen name="view_spacing">8dp</dimen>
+    <dimen name="right_margin">8dp</dimen>
+    <dimen name="cardview_margin">2dp</dimen>
+    <dimen name="movie_item_label_height">85dp</dimen>
+    <dimen name="favorite_star_size">36dp</dimen>
+    <dimen name="play_button_padding">4dp</dimen>
+    <dimen name="play_button_right_spacing">16dp</dimen>
     <integer name="movie_poster_grid_span">2</integer>
 </resources>
