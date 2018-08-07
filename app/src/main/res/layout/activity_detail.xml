@@ -31,15 +31,15 @@
             android:layout_marginLeft="@dimen/movie_thumbnail_margin"
             android:layout_marginRight="@dimen/movie_thumbnail_margin"
             android:layout_marginStart="@dimen/movie_thumbnail_margin"
-            app:layout_constraintEnd_toStartOf="@id/favorite_star_icon"
+            app:layout_constraintEnd_toStartOf="@id/details_favorite_star"
             app:layout_constraintStart_toEndOf="@+id/movie_poster_thumbnail"
             app:layout_constraintTop_toTopOf="parent"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
         <ToggleButton
-            android:id="@+id/favorite_star_icon"
-            android:layout_width="@dimen/movie_thumbnail_margin"
-            android:layout_height="@dimen/movie_thumbnail_margin"
+            android:id="@+id/details_favorite_star"
+            android:layout_width="@dimen/favorite_star_size"
+            android:layout_height="@dimen/favorite_star_size"
             android:layout_marginRight="@dimen/right_margin"
             android:layout_marginEnd="@dimen/right_margin"
             android:textOff=""

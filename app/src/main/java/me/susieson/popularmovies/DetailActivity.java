@@ -3,30 +3,38 @@ package me.susieson.popularmovies;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.susieson.popularmovies.adapters.ReviewAdapter;
 import me.susieson.popularmovies.adapters.TrailerAdapter;
 import me.susieson.popularmovies.constants.IntentExtraConstants;
+import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.models.Review;
@@ -35,6 +43,7 @@ import me.susieson.popularmovies.models.Trailer;
 import me.susieson.popularmovies.models.TrailerResponse;
 import me.susieson.popularmovies.network.GetMovieData;
 import me.susieson.popularmovies.network.RetrofitClientInstance;
+import me.susieson.popularmovies.tasks.MovieExecutors;
 import me.susieson.popularmovies.utils.ImageUtils;
 import me.susieson.popularmovies.utils.NetworkUtils;
 import retrofit2.Call;
@@ -73,11 +82,16 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
     @BindView(R.id.retry_button)
     Button mRetryButton;
 
+    @BindView(R.id.details_favorite_star)
+    ToggleButton mToggleButton;
+
     ArrayList<Review> mReviewArrayList;
     ReviewAdapter mReviewAdapter;
 
     ArrayList<Trailer> mTrailerArrayList;
     TrailerAdapter mTrailerAdapter;
+
+    private MovieDatabase mMovieDatabase;
 
     private int mId;
 
@@ -91,7 +105,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
 
         if (intent.hasExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE)) {
 
-            Movie selectedMovie = getIntent().getParcelableExtra(
+            final Movie selectedMovie = getIntent().getParcelableExtra(
                     IntentExtraConstants.EXTRA_SELECTED_MOVIE);
 
             String originalTitle = selectedMovie.getOriginalTitle();
@@ -118,6 +132,35 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
             if (releaseDate != null && !releaseDate.equals("")) {
                 mReleaseDateTv.setText(releaseDate);
             }
+
+            mMovieDatabase = MovieDatabase.getInstance(this);
+
+            LiveData<List<Movie>> liveDataMovies = mMovieDatabase.movieDao().getFavorites();
+            liveDataMovies.observe(this, new Observer<List<Movie>>() {
+                @Override
+                public void onChanged(@Nullable List<Movie> movies) {
+                    if (movies == null) return;
+                    if (movies.contains(selectedMovie)) {
+                        mToggleButton.setChecked(true);
+                    } else {
+                        mToggleButton.setChecked(false);
+                    }
+                }
+            });
+
+            mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, final boolean isChecked) {
+                    selectedMovie.setFavorited(isChecked);
+
+                    MovieExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMovieDatabase.movieDao().updateMovie(selectedMovie.getId(), isChecked);
+                        }
+                    });
+                }
+            });
 
             mReviewArrayList = new ArrayList<>();
             mTrailerArrayList = new ArrayList<>();
@@ -152,6 +195,17 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
         } catch (ActivityNotFoundException ex) {
             Toast.makeText(this, R.string.trailer_error, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void tryConnection(final int id) {

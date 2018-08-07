@@ -41,12 +41,12 @@
             android:layout_marginTop="@dimen/view_spacing"
             android:textAppearance="@style/TextAppearance.AppCompat.Title.Inverse"
             app:layout_constraintBottom_toBottomOf="@+id/label"
-            app:layout_constraintEnd_toStartOf="@+id/favorite_star"
+            app:layout_constraintEnd_toStartOf="@+id/movies_favorite_star"
             app:layout_constraintStart_toStartOf="@+id/label"
             app:layout_constraintTop_toTopOf="@+id/label"/>
 
         <ToggleButton
-            android:id="@+id/favorite_star"
+            android:id="@+id/movies_favorite_star"
             android:layout_width="@dimen/favorite_star_size"
             android:layout_height="@dimen/favorite_star_size"
             android:layout_marginBottom="@dimen/view_spacing"

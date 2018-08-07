@@ -10,4 +10,6 @@
     <string name="trailer_error">Cannot play video!</string>
     <string name="trailer_play_content_description">Play the trailer.</string>
     <string name="loading_error_message">There was an error loading extra information.</string>
+    <string name="favorites">Favorites</string>
+    <string name="no_favorites">No favorites yet!</string>
 </resources>
