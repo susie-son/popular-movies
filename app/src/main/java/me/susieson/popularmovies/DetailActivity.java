@@ -3,6 +3,8 @@ package me.susieson.popularmovies;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import static me.susieson.popularmovies.MainActivity.EXTRA_SELECTED_MOVIE;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -34,7 +36,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.susieson.popularmovies.adapters.ReviewAdapter;
 import me.susieson.popularmovies.adapters.TrailerAdapter;
-import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
@@ -54,53 +55,41 @@ import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity implements OnItemClickListener {
 
+    private static final String TRAILER_LIST_EXTRA = "trailer_list";
+    private static final String REVIEW_LIST_EXTRA = "review_list";
+    private static final String CONNECTION_SUCCESSFUL_EXTRA = "connection_successful";
+
     @BindView(R.id.movie_poster_thumbnail)
     ImageView mThumbnail;
-
     @BindView(R.id.movie_title)
     TextView mTitle;
-
     @BindView(R.id.overview)
     TextView mOverviewTv;
-
     @BindView(R.id.vote_average)
     TextView mVoteAverageTv;
-
     @BindView(R.id.release_date)
     TextView mReleaseDateTv;
-
     @BindView(R.id.reviews_rv)
     RecyclerView mReviewRecyclerView;
-
     @BindView(R.id.trailers_rv)
     RecyclerView mTrailerRecyclerView;
-
     @BindView(R.id.progress_bar)
     ProgressBar mProgressBar;
-
     @BindView(R.id.loading_error)
     TextView mErrorMessage;
-
     @BindView(R.id.retry_button)
     Button mRetryButton;
-
     @BindView(R.id.details_favorite_star)
     ToggleButton mToggleButton;
 
-    ArrayList<Review> mReviewArrayList;
-    ReviewAdapter mReviewAdapter;
-
-    ArrayList<Trailer> mTrailerArrayList;
-    TrailerAdapter mTrailerAdapter;
-
+    private ArrayList<Review> mReviewArrayList;
+    private ArrayList<Trailer> mTrailerArrayList;
+    private ReviewAdapter mReviewAdapter;
+    private TrailerAdapter mTrailerAdapter;
     private MovieDatabase mMovieDatabase;
 
     private int mId;
     private boolean mConnectionSuccessful;
-
-    private static final String TRAILER_LIST_EXTRA = "trailer_list";
-    private static final String REVIEW_LIST_EXTRA = "review_list";
-    private static final String CONNECTION_SUCCESSFUL_EXTRA = "connection_successful";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +99,9 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE)) {
+        if (intent.hasExtra(EXTRA_SELECTED_MOVIE)) {
 
-            final Movie selectedMovie = getIntent().getParcelableExtra(
-                    IntentExtraConstants.EXTRA_SELECTED_MOVIE);
+            final Movie selectedMovie = getIntent().getParcelableExtra(EXTRA_SELECTED_MOVIE);
 
             String originalTitle = selectedMovie.getOriginalTitle();
             String posterPath = selectedMovie.getPosterPath();
@@ -127,8 +115,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
             }
 
             String imageUrl = ImageUtils.buildUrl(posterPath);
-            Picasso.with(this).load(imageUrl).error(R.drawable.image_not_available).into(
-                    mThumbnail);
+            Picasso.with(this).load(imageUrl).into(mThumbnail);
 
             if (overview != null && !overview.equals("")) {
                 mOverviewTv.setText(overview);
@@ -255,6 +242,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
                 public void onResponse(@NonNull Call<TrailerResponse> call,
                         @NonNull Response<TrailerResponse> response) {
                     if (response.body() != null) {
+
                         mTrailerArrayList = response.body().getResults();
                         mTrailerAdapter.updateData(mTrailerArrayList);
 

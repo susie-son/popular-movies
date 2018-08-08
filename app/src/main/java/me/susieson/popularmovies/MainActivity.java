@@ -27,8 +27,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.susieson.popularmovies.adapters.MovieAdapter;
-import me.susieson.popularmovies.constants.IntentExtraConstants;
-import me.susieson.popularmovies.constants.PreferenceConstants;
 import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
@@ -44,39 +42,34 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener {
 
+    public static final String EXTRA_SELECTED_MOVIE =
+            "me.susieson.popularmovies.MainActivity.SELECTED_MOVIE";
+
     private static final String SORT_BY = "sort-by";
     private static final String MOVIE_LIST_EXTRA = "movie_list";
     private static final String CONNECTION_SUCCESSFUL_EXTRA = "connection_successful";
+    private static final String MOST_POPULAR = "popular";
+    private static final String TOP_RATED = "top_rated";
+    private static final String FAVORITES = "favorites";
 
     private ArrayList<Movie> mMovieArrayList;
-
     private MovieAdapter mMovieAdapter;
-
     private Callback<MovieResponse> mCallback;
-
     private SharedPreferences mSharedPreferences;
-
     private MovieDatabase mMovieDatabase;
-
     private LiveData<List<Movie>> mLiveDataMovies;
-
     private Observer<List<Movie>> mObserver;
 
     @BindView(R.id.movies_rv)
     RecyclerView mRecyclerView;
-
     @BindView(R.id.main_progress_bar)
     ProgressBar mProgressBar;
-
     @BindView(R.id.main_loading_error)
     TextView mErrorMessage;
-
     @BindView(R.id.retry_button)
     Button mRetryButton;
-
     @BindView(R.id.favorites_error)
     TextView mFavoritesError;
-
     @BindInt(R.integer.movie_poster_grid_span)
     int gridSpan;
 
@@ -117,15 +110,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     @NonNull Response<MovieResponse> response) {
                 hideProgressLoading();
 
-                if (response.body() != null) {
-                    mMovieArrayList = response.body().getResults();
-                    MovieExecutors.getInstance().diskIO().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mMovieDatabase.movieDao().insertMovies(mMovieArrayList);
-                        }
-                    });
-                }
+                mMovieArrayList = response.body().getResults();
+
+                MovieExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMovieDatabase.movieDao().insertMovies(mMovieArrayList);
+                    }
+                });
 
                 mMovieAdapter.updateData(mMovieArrayList);
                 mRecyclerView.scrollToPosition(0);
@@ -150,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             MOVIE_LIST_EXTRA);
                 }
                 hideProgressLoading();
-            } else if (mSharedPreferences.getString(SORT_BY, "").equals(PreferenceConstants.FAVORITES)) {
+            } else if (mSharedPreferences.getString(SORT_BY, "").equals(FAVORITES)) {
                 showFavoritesError();
             } else {
                 showErrorMessage();
@@ -183,19 +175,19 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         switch (menuItemSelectedId) {
             case R.id.most_popular:
-                editor.putString(SORT_BY, PreferenceConstants.MOST_POPULAR);
+                editor.putString(SORT_BY, MOST_POPULAR);
                 editor.apply();
-                tryConnection(PreferenceConstants.MOST_POPULAR);
+                tryConnection(MOST_POPULAR);
                 return true;
             case R.id.top_rated:
-                editor.putString(SORT_BY, PreferenceConstants.TOP_RATED);
+                editor.putString(SORT_BY, TOP_RATED);
                 editor.apply();
-                tryConnection(PreferenceConstants.TOP_RATED);
+                tryConnection(TOP_RATED);
                 return true;
             case R.id.favorites:
-                editor.putString(SORT_BY, PreferenceConstants.FAVORITES);
+                editor.putString(SORT_BY, FAVORITES);
                 editor.apply();
-                tryConnection(PreferenceConstants.FAVORITES);
+                tryConnection(FAVORITES);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -206,13 +198,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         Movie selectedMovie = mMovieArrayList.get(position);
 
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
+        intent.putExtra(EXTRA_SELECTED_MOVIE, selectedMovie);
         startActivity(intent);
     }
 
     @OnClick(R.id.retry_button)
     public void retryConnection(View view) {
-        tryConnection(mSharedPreferences.getString(SORT_BY, PreferenceConstants.MOST_POPULAR));
+        tryConnection(mSharedPreferences.getString(SORT_BY, MOST_POPULAR));
     }
 
     @Override
@@ -261,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         showProgressLoading();
         if (NetworkUtils.isConnected(this)) {
             switch (preference) {
-                case PreferenceConstants.MOST_POPULAR: {
+                case MOST_POPULAR: {
                     mLiveDataMovies.removeObserver(mObserver);
                     GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
                             GetMovieData.class);
@@ -270,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     call.enqueue(mCallback);
                     break;
                 }
-                case PreferenceConstants.TOP_RATED: {
+                case TOP_RATED: {
                     mLiveDataMovies.removeObserver(mObserver);
                     GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
                             GetMovieData.class);
@@ -279,12 +271,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     call.enqueue(mCallback);
                     break;
                 }
-                case PreferenceConstants.FAVORITES:
+                case FAVORITES:
                     mLiveDataMovies.removeObserver(mObserver);
                     mLiveDataMovies.observe(this, mObserver);
                     break;
             }
-        } else if (preference.equals(PreferenceConstants.FAVORITES)) {
+        } else if (preference.equals(FAVORITES)) {
             mLiveDataMovies.removeObserver(mObserver);
             mLiveDataMovies.observe(this, mObserver);
         } else {

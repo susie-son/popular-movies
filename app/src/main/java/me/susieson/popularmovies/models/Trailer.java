@@ -3,17 +3,14 @@ package me.susieson.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Trailer implements Parcelable {
 
     @SerializedName("key")
-    @Expose
-    private String key;
+    private final String key;
     @SerializedName("name")
-    @Expose
-    private String name;
+    private final String name;
 
     private Trailer(Parcel in) {
         key = in.readString();

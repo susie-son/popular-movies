@@ -7,13 +7,10 @@ import java.util.ArrayList;
 public class MovieResponse {
 
     @SerializedName("results")
-    ArrayList<Movie> results;
+    private final ArrayList<Movie> results = null;
 
     public ArrayList<Movie> getResults() {
         return results;
     }
 
-    public void setResults(ArrayList<Movie> results) {
-        this.results = results;
-    }
 }
