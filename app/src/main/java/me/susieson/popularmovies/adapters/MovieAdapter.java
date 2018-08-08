@@ -35,10 +35,9 @@ import me.susieson.popularmovies.utils.ImageUtils;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     private static ArrayList<Movie> mMovieArrayList;
-    private final OnItemClickListener mOnItemClickListener;
-
     private static MovieDatabase mMovieDatabase;
-    private Context mContext;
+    private final OnItemClickListener mOnItemClickListener;
+    private final Context mContext;
 
     public MovieAdapter(Context context, ArrayList<Movie> movieArrayList,
             OnItemClickListener onItemClickListener) {
@@ -103,8 +102,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             final Movie movie = mMovieArrayList.get(position);
 
             final String URL = ImageUtils.buildUrl(movie.getPosterPath());
-            Picasso.with(itemView.getContext()).load(URL).error(
-                    R.drawable.image_not_available).into(mImageView);
+            Picasso.with(itemView.getContext()).load(URL).into(mImageView);
 
             mTitle.setText(movie.getTitle());
 
@@ -116,7 +114,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
             final CompoundButton.OnCheckedChangeListener listener =
                     new CompoundButton.OnCheckedChangeListener() {
-
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton,
                                 final boolean isChecked) {
@@ -128,7 +125,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                                     mMovieDatabase.movieDao().updateMovie(movie.getId(), isChecked);
                                 }
                             });
-
                         }
                     };
 
@@ -149,7 +145,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 }
             };
 
-            MovieViewModel movieViewModel = ViewModelProviders.of((FragmentActivity) mContext).get(MovieViewModel.class);
+            MovieViewModel movieViewModel = ViewModelProviders.of((FragmentActivity) mContext).get(
+                    MovieViewModel.class);
 
             mLiveDataMovies = movieViewModel.getFavoriteMovies();
             mLiveDataMovies.observe((LifecycleOwner) mContext, mObserver);

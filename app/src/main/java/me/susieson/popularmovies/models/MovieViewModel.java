@@ -11,11 +11,11 @@ import me.susieson.popularmovies.database.MovieDatabase;
 
 public class MovieViewModel extends AndroidViewModel {
 
-    private LiveData<List<Movie>> movies;
+    private final LiveData<List<Movie>> movies;
 
     public MovieViewModel(@NonNull Application application) {
         super(application);
-        movies = MovieDatabase.getInstance(this.getApplication()).movieDao().getFavorites();
+        movies = MovieDatabase.getInstance(getApplication()).movieDao().getFavorites();
     }
 
     public LiveData<List<Movie>> getFavoriteMovies() {

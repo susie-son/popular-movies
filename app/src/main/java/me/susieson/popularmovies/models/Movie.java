@@ -11,38 +11,32 @@ import com.google.gson.annotations.SerializedName;
 @Entity
 public class Movie implements Parcelable {
 
-    @ColumnInfo(name = "title")
-    @SerializedName("title")
-    private final String title;
-
-    @ColumnInfo(name = "original_title")
-    @SerializedName("original_title")
-    private final String originalTitle;
-
-    @ColumnInfo(name = "poster_path")
-    @SerializedName("poster_path")
-    private final String posterPath;
-
-    @ColumnInfo(name = "overview")
-    @SerializedName("overview")
-    private final String overview;
-
-    @ColumnInfo(name = "vote_average")
-    @SerializedName("vote_average")
-    private final double voteAverage;
-
-    @ColumnInfo(name = "release_date")
-    @SerializedName("release_date")
-    private final String releaseDate;
-
-    @ColumnInfo(name = "is_favorited")
-    private boolean isFavorited = false;
-
     @PrimaryKey
     @SerializedName("id")
     private final int id;
+    @ColumnInfo(name = "title")
+    @SerializedName("title")
+    private final String title;
+    @ColumnInfo(name = "original_title")
+    @SerializedName("original_title")
+    private final String originalTitle;
+    @ColumnInfo(name = "poster_path")
+    @SerializedName("poster_path")
+    private final String posterPath;
+    @ColumnInfo(name = "overview")
+    @SerializedName("overview")
+    private final String overview;
+    @ColumnInfo(name = "vote_average")
+    @SerializedName("vote_average")
+    private final double voteAverage;
+    @ColumnInfo(name = "release_date")
+    @SerializedName("release_date")
+    private final String releaseDate;
+    @ColumnInfo(name = "is_favorited")
+    private boolean isFavorited = false;
 
-    public Movie(String title, String originalTitle, String posterPath, String overview, double voteAverage,
+    public Movie(String title, String originalTitle, String posterPath, String overview,
+            double voteAverage,
             String releaseDate, int id) {
         this.title = title;
         this.originalTitle = originalTitle;
@@ -127,11 +121,6 @@ public class Movie implements Parcelable {
         parcel.writeString(releaseDate);
         parcel.writeInt(id);
         parcel.writeInt(isFavorited ? 1 : 0);
-    }
-
-    @Override
-    public String toString() {
-        return title;
     }
 
     @Override
