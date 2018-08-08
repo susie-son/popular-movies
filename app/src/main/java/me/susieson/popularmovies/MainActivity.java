@@ -2,6 +2,7 @@ package me.susieson.popularmovies;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
 import me.susieson.popularmovies.models.MovieResponse;
+import me.susieson.popularmovies.models.MovieViewModel;
 import me.susieson.popularmovies.network.GetMovieData;
 import me.susieson.popularmovies.network.RetrofitClientInstance;
 import me.susieson.popularmovies.tasks.MovieExecutors;
@@ -42,7 +44,9 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener {
 
-    public static final String SORT_BY = "sort-by";
+    private static final String SORT_BY = "sort-by";
+    private static final String MOVIE_LIST_EXTRA = "movie_list";
+    private static final String CONNECTION_SUCCESSFUL_EXTRA = "connection_successful";
 
     private ArrayList<Movie> mMovieArrayList;
 
@@ -76,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     @BindInt(R.integer.movie_poster_grid_span)
     int gridSpan;
 
+    private boolean mConnectionSuccessful;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
         };
 
-        mLiveDataMovies = mMovieDatabase.movieDao().getFavorites();
+        MovieViewModel movieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
+        mLiveDataMovies = movieViewModel.getFavoriteMovies();
 
         mCallback = new Callback<MovieResponse>() {
             @Override
@@ -134,7 +141,23 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
         };
 
-        tryConnection(mSharedPreferences.getString(SORT_BY, PreferenceConstants.MOST_POPULAR));
+        if (savedInstanceState != null && savedInstanceState.containsKey(
+                CONNECTION_SUCCESSFUL_EXTRA)) {
+            showProgressLoading();
+            if (savedInstanceState.getBoolean(CONNECTION_SUCCESSFUL_EXTRA)) {
+                if (savedInstanceState.containsKey(MOVIE_LIST_EXTRA)) {
+                    mMovieArrayList = savedInstanceState.getParcelableArrayList(
+                            MOVIE_LIST_EXTRA);
+                }
+                hideProgressLoading();
+            } else if (mSharedPreferences.getString(SORT_BY, "").equals(PreferenceConstants.FAVORITES)) {
+                showFavoritesError();
+            } else {
+                showErrorMessage();
+            }
+        } else {
+            tryConnection(mSharedPreferences.getString(SORT_BY, ""));
+        }
 
         GridLayoutManager gridLayoutManager;
 
@@ -178,12 +201,34 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemClick(int position) {
+        Movie selectedMovie = mMovieArrayList.get(position);
+
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.retry_button)
+    public void retryConnection(View view) {
+        tryConnection(mSharedPreferences.getString(SORT_BY, PreferenceConstants.MOST_POPULAR));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(MOVIE_LIST_EXTRA, mMovieArrayList);
+        outState.putBoolean(CONNECTION_SUCCESSFUL_EXTRA, mConnectionSuccessful);
+    }
+
     private void showErrorMessage() {
         mFavoritesError.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.GONE);
         mErrorMessage.setVisibility(View.VISIBLE);
         mRetryButton.setVisibility(View.VISIBLE);
+        mConnectionSuccessful = false;
     }
 
     private void showProgressLoading() {
@@ -200,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         mErrorMessage.setVisibility(View.GONE);
         mRetryButton.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
+        mConnectionSuccessful = true;
     }
 
     private void showFavoritesError() {
@@ -208,20 +254,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         mErrorMessage.setVisibility(View.GONE);
         mRetryButton.setVisibility(View.GONE);
         mFavoritesError.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        Movie selectedMovie = mMovieArrayList.get(position);
-
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(IntentExtraConstants.EXTRA_SELECTED_MOVIE, selectedMovie);
-        startActivity(intent);
-    }
-
-    @OnClick(R.id.retry_button)
-    public void retryConnection(View view) {
-        tryConnection(mSharedPreferences.getString(SORT_BY, PreferenceConstants.MOST_POPULAR));
+        mConnectionSuccessful = false;
     }
 
     private void tryConnection(String preference) {
