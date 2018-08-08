@@ -5,6 +5,7 @@ import static android.view.View.VISIBLE;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,6 +38,7 @@ import me.susieson.popularmovies.constants.IntentExtraConstants;
 import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
+import me.susieson.popularmovies.models.MovieViewModel;
 import me.susieson.popularmovies.models.Review;
 import me.susieson.popularmovies.models.ReviewResponse;
 import me.susieson.popularmovies.models.Trailer;
@@ -94,6 +96,11 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
     private MovieDatabase mMovieDatabase;
 
     private int mId;
+    private boolean mConnectionSuccessful;
+
+    private static final String TRAILER_LIST_EXTRA = "trailer_list";
+    private static final String REVIEW_LIST_EXTRA = "review_list";
+    private static final String CONNECTION_SUCCESSFUL_EXTRA = "connection_successful";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +142,8 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
 
             mMovieDatabase = MovieDatabase.getInstance(this);
 
-            LiveData<List<Movie>> liveDataMovies = mMovieDatabase.movieDao().getFavorites();
+            MovieViewModel movieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
+            LiveData<List<Movie>> liveDataMovies = movieViewModel.getFavoriteMovies();
             liveDataMovies.observe(this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies) {
@@ -150,7 +158,8 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
 
             mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, final boolean isChecked) {
+                public void onCheckedChanged(CompoundButton compoundButton,
+                        final boolean isChecked) {
                     selectedMovie.setFavorited(isChecked);
 
                     MovieExecutors.getInstance().diskIO().execute(new Runnable() {
@@ -165,7 +174,25 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
             mReviewArrayList = new ArrayList<>();
             mTrailerArrayList = new ArrayList<>();
 
-            tryConnection(mId);
+            if (savedInstanceState != null && savedInstanceState.containsKey(
+                    CONNECTION_SUCCESSFUL_EXTRA)) {
+                showProgressLoading();
+                if (savedInstanceState.getBoolean(CONNECTION_SUCCESSFUL_EXTRA)) {
+                    if (savedInstanceState.containsKey(TRAILER_LIST_EXTRA)) {
+                        mTrailerArrayList = savedInstanceState.getParcelableArrayList(
+                                TRAILER_LIST_EXTRA);
+                    }
+                    if (savedInstanceState.containsKey(REVIEW_LIST_EXTRA)) {
+                        mReviewArrayList = savedInstanceState.getParcelableArrayList(
+                                REVIEW_LIST_EXTRA);
+                    }
+                    hideProgressLoading();
+                } else {
+                    showErrorMessage();
+                }
+            } else {
+                tryConnection(mId);
+            }
 
             LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(this);
             LinearLayoutManager trailerLayoutManager = new LinearLayoutManager(this);
@@ -179,7 +206,6 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
             mTrailerRecyclerView.setNestedScrollingEnabled(false);
             mTrailerRecyclerView.setLayoutManager(trailerLayoutManager);
             mTrailerRecyclerView.setAdapter(mTrailerAdapter);
-
         }
     }
 
@@ -206,6 +232,14 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(REVIEW_LIST_EXTRA, mReviewArrayList);
+        outState.putParcelableArrayList(TRAILER_LIST_EXTRA, mTrailerArrayList);
+        outState.putBoolean(CONNECTION_SUCCESSFUL_EXTRA, mConnectionSuccessful);
     }
 
     private void tryConnection(final int id) {
@@ -240,7 +274,8 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
                             }
 
                             @Override
-                            public void onFailure(@NonNull Call<ReviewResponse> call, @NonNull Throwable t) {
+                            public void onFailure(@NonNull Call<ReviewResponse> call,
+                                    @NonNull Throwable t) {
                                 showErrorMessage();
                             }
                         });
@@ -270,6 +305,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
         mProgressBar.setVisibility(GONE);
         mErrorMessage.setVisibility(VISIBLE);
         mRetryButton.setVisibility(VISIBLE);
+        mConnectionSuccessful = false;
     }
 
     private void showProgressLoading() {
@@ -286,5 +322,6 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
         mRetryButton.setVisibility(GONE);
         mTrailerRecyclerView.setVisibility(VISIBLE);
         mReviewRecyclerView.setVisibility(VISIBLE);
+        mConnectionSuccessful = true;
     }
 }

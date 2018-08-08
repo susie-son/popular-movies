@@ -3,9 +3,11 @@ package me.susieson.popularmovies.adapters;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,7 @@ import me.susieson.popularmovies.R;
 import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
+import me.susieson.popularmovies.models.MovieViewModel;
 import me.susieson.popularmovies.tasks.MovieExecutors;
 import me.susieson.popularmovies.utils.ImageUtils;
 
@@ -146,7 +149,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 }
             };
 
-            mLiveDataMovies = mMovieDatabase.movieDao().getFavorites();
+            MovieViewModel movieViewModel = ViewModelProviders.of((FragmentActivity) mContext).get(MovieViewModel.class);
+
+            mLiveDataMovies = movieViewModel.getFavoriteMovies();
             mLiveDataMovies.observe((LifecycleOwner) mContext, mObserver);
 
             mToggleButton.setOnCheckedChangeListener(listener);
