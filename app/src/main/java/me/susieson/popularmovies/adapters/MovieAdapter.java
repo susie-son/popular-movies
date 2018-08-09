@@ -12,9 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
@@ -84,11 +84,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         @BindView(R.id.movie_poster_image)
         ImageView mImageView;
 
-        @BindView(R.id.movie_title)
-        TextView mTitle;
-
         @BindView(R.id.movies_favorite_star)
         ToggleButton mToggleButton;
+
+        @BindView(R.id.view_button)
+        Button mViewButton;
 
         private LiveData<List<Movie>> mLiveDataMovies;
         private Observer<List<Movie>> mObserver;
@@ -104,9 +104,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             final String URL = ImageUtils.buildUrl(movie.getPosterPath());
             Picasso.with(itemView.getContext()).load(URL).into(mImageView);
 
-            mTitle.setText(movie.getTitle());
-
-            mImageView.setOnClickListener(new View.OnClickListener() {
+            mViewButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     onItemClickListener.onItemClick(position);
                 }

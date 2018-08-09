@@ -62,9 +62,12 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         @BindView(R.id.trailer_play_icon)
         ImageView playIcon;
 
+        private View mItemView;
+
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            mItemView = itemView;
         }
 
         void bind(final int position, final OnItemClickListener onItemClickListener) {
@@ -72,7 +75,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
             trailerNameTextView.setText(trailer.getName());
 
-            playIcon.setOnClickListener(new View.OnClickListener() {
+            mItemView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     onItemClickListener.onItemClick(position);
                 }
