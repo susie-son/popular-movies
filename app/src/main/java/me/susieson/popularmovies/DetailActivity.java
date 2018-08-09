@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -57,6 +58,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
     private static final String TRAILER_LIST_EXTRA = "trailer_list";
     private static final String REVIEW_LIST_EXTRA = "review_list";
     private static final String CONNECTION_SUCCESSFUL_EXTRA = "connection_successful";
+    private static final String YOUTUBE_BASE_LINK = "http://www.youtube.com/watch?v=";
 
     @BindView(R.id.movie_poster_thumbnail)
     ImageView mThumbnail;
@@ -201,7 +203,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
         String id = trailer.getKey();
 
         Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://www.youtube.com/watch?v=" + id));
+                Uri.parse(YOUTUBE_BASE_LINK + id));
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException ex) {
@@ -210,11 +212,28 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.details_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.share_trailer:
+                if (mTrailerArrayList.size() == 0) {
+                    Toast.makeText(this, R.string.no_trailer_error, Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, YOUTUBE_BASE_LINK + mTrailerArrayList.get(0).getKey());
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -273,7 +292,8 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<MovieApiResponse<Trailer>> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<MovieApiResponse<Trailer>> call,
+                        @NonNull Throwable t) {
                     showErrorMessage();
                 }
             });

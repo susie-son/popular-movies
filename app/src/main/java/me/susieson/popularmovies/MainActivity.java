@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.sort_by, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
