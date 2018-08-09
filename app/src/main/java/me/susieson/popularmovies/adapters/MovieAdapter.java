@@ -60,7 +60,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(position, mOnItemClickListener);
+        holder.bind(holder.getAdapterPosition(), mOnItemClickListener);
     }
 
     @Override
