@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private MovieDatabase mMovieDatabase;
     private LiveData<List<Movie>> mLiveDataMovies;
     private Observer<List<Movie>> mObserver;
+    private GetMovieData mGetMovieData;
 
     @BindView(R.id.movies_rv)
     RecyclerView mRecyclerView;
@@ -86,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         mMovieArrayList = new ArrayList<>();
 
         mMovieDatabase = MovieDatabase.getInstance(this);
+
+        mGetMovieData = RetrofitClientInstance.getRetrofitInstance().create(
+                GetMovieData.class);
 
         mObserver = new Observer<List<Movie>>() {
             @Override
@@ -128,7 +132,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
 
             @Override
-            public void onFailure(@NonNull Call<MovieApiResponse<Movie>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MovieApiResponse<Movie>> call,
+                    @NonNull Throwable t) {
                 showErrorMessage();
             }
         };
@@ -255,18 +260,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             switch (preference) {
                 case MOST_POPULAR: {
                     mLiveDataMovies.removeObserver(mObserver);
-                    GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
-                            GetMovieData.class);
-                    Call<MovieApiResponse<Movie>> call = getMovieData.getMostPopularMovies(
+                    Call<MovieApiResponse<Movie>> call = mGetMovieData.getMostPopularMovies(
                             BuildConfig.TMDB_API_KEY);
                     call.enqueue(mCallback);
                     break;
                 }
                 case TOP_RATED: {
                     mLiveDataMovies.removeObserver(mObserver);
-                    GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
-                            GetMovieData.class);
-                    Call<MovieApiResponse<Movie>> call = getMovieData.getTopRatedMovies(
+                    Call<MovieApiResponse<Movie>> call = mGetMovieData.getTopRatedMovies(
                             BuildConfig.TMDB_API_KEY);
                     call.enqueue(mCallback);
                     break;
