@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class TrailerResponse {
+public class MovieApiResponse<T> {
 
     @SerializedName("results")
-    private final ArrayList<Trailer> results = null;
+    private final ArrayList<T> results = null;
 
-    public ArrayList<Trailer> getResults() {
+    public ArrayList<T> getResults() {
         return results;
     }
 

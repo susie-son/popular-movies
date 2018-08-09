@@ -39,11 +39,10 @@ import me.susieson.popularmovies.adapters.TrailerAdapter;
 import me.susieson.popularmovies.database.MovieDatabase;
 import me.susieson.popularmovies.interfaces.OnItemClickListener;
 import me.susieson.popularmovies.models.Movie;
+import me.susieson.popularmovies.models.MovieApiResponse;
 import me.susieson.popularmovies.models.MovieViewModel;
 import me.susieson.popularmovies.models.Review;
-import me.susieson.popularmovies.models.ReviewResponse;
 import me.susieson.popularmovies.models.Trailer;
-import me.susieson.popularmovies.models.TrailerResponse;
 import me.susieson.popularmovies.network.GetMovieData;
 import me.susieson.popularmovies.network.RetrofitClientInstance;
 import me.susieson.popularmovies.tasks.MovieExecutors;
@@ -235,23 +234,23 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
             final GetMovieData getMovieData = RetrofitClientInstance.getRetrofitInstance().create(
                     GetMovieData.class);
 
-            Call<TrailerResponse> trailerCall = getMovieData.getTrailers(id,
+            Call<MovieApiResponse<Trailer>> trailerCall = getMovieData.getTrailers(id,
                     BuildConfig.TMDB_API_KEY);
-            trailerCall.enqueue(new Callback<TrailerResponse>() {
+            trailerCall.enqueue(new Callback<MovieApiResponse<Trailer>>() {
                 @Override
-                public void onResponse(@NonNull Call<TrailerResponse> call,
-                        @NonNull Response<TrailerResponse> response) {
+                public void onResponse(@NonNull Call<MovieApiResponse<Trailer>> call,
+                        @NonNull Response<MovieApiResponse<Trailer>> response) {
                     if (response.body() != null) {
 
                         mTrailerArrayList = response.body().getResults();
                         mTrailerAdapter.updateData(mTrailerArrayList);
 
-                        Call<ReviewResponse> reviewCall = getMovieData.getReviews(id,
+                        Call<MovieApiResponse<Review>> reviewCall = getMovieData.getReviews(id,
                                 BuildConfig.TMDB_API_KEY);
-                        reviewCall.enqueue(new Callback<ReviewResponse>() {
+                        reviewCall.enqueue(new Callback<MovieApiResponse<Review>>() {
                             @Override
-                            public void onResponse(@NonNull Call<ReviewResponse> call,
-                                    @NonNull Response<ReviewResponse> response) {
+                            public void onResponse(@NonNull Call<MovieApiResponse<Review>> call,
+                                    @NonNull Response<MovieApiResponse<Review>> response) {
                                 hideProgressLoading();
                                 if (response.body() != null) {
                                     mReviewArrayList = response.body().getResults();
@@ -262,7 +261,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
                             }
 
                             @Override
-                            public void onFailure(@NonNull Call<ReviewResponse> call,
+                            public void onFailure(@NonNull Call<MovieApiResponse<Review>> call,
                                     @NonNull Throwable t) {
                                 showErrorMessage();
                             }
@@ -274,7 +273,7 @@ public class DetailActivity extends AppCompatActivity implements OnItemClickList
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<TrailerResponse> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<MovieApiResponse<Trailer>> call, @NonNull Throwable t) {
                     showErrorMessage();
                 }
             });
