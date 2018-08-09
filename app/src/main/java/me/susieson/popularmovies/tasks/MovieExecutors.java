@@ -8,13 +8,17 @@ public class MovieExecutors {
     private static MovieExecutors sInstance;
     private final Executor diskIO;
 
+    private static final Object LOCK = new Object();
+
     private MovieExecutors(Executor diskIO) {
         this.diskIO = diskIO;
     }
 
     public static MovieExecutors getInstance() {
         if (sInstance == null) {
-            sInstance = new MovieExecutors(Executors.newSingleThreadExecutor());
+            synchronized (LOCK) {
+                sInstance = new MovieExecutors(Executors.newSingleThreadExecutor());
+            }
         }
         return sInstance;
     }
