@@ -41,7 +41,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(position, mOnItemClickListener);
+        holder.bind(holder.getAdapterPosition(), mOnItemClickListener);
     }
 
     @Override

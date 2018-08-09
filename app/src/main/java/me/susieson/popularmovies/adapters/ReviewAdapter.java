@@ -36,7 +36,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(position);
+        holder.bind(holder.getAdapterPosition());
     }
 
     @Override
