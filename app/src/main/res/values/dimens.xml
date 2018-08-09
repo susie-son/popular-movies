@@ -3,11 +3,11 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="progress_bar_dimen">42dp</dimen>
-    <dimen name="movie_thumbnail_margin">32dp</dimen>
+    <dimen name="movie_thumbnail_margin">16dp</dimen>
     <dimen name="view_spacing">8dp</dimen>
     <dimen name="right_margin">8dp</dimen>
     <dimen name="cardview_margin">2dp</dimen>
-    <dimen name="movie_item_label_height">85dp</dimen>
+    <dimen name="movie_item_label_height">48dp</dimen>
     <dimen name="favorite_star_size">24dp</dimen>
     <dimen name="play_button_padding">4dp</dimen>
     <dimen name="play_button_right_spacing">16dp</dimen>

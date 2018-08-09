@@ -4,9 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/view_spacing"
-    android:layout_marginBottom="@dimen/view_spacing"
-    android:orientation="horizontal">
+    android:paddingTop="@dimen/view_spacing"
+    android:paddingBottom="@dimen/view_spacing"
+    android:orientation="horizontal"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:selectableItemBackground">
 
     <ImageView
         android:id="@+id/trailer_play_icon"
@@ -14,7 +17,6 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/trailer_play_content_description"
         android:src="@drawable/ic_baseline_play_arrow_24px"
-        android:background="?android:attr/selectableItemBackground"
         android:padding="@dimen/play_button_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -23,11 +25,12 @@
         android:id="@+id/trailer_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/right_margin"
-        android:layout_marginLeft="@dimen/play_button_right_spacing"
-        android:layout_marginRight="@dimen/right_margin"
-        android:layout_marginStart="@dimen/play_button_right_spacing"
+        android:paddingEnd="@dimen/right_margin"
+        android:paddingLeft="@dimen/play_button_right_spacing"
+        android:paddingRight="@dimen/right_margin"
+        android:paddingStart="@dimen/play_button_right_spacing"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorPrimaryText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/trailer_play_icon"
